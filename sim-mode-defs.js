@@ -92,7 +92,7 @@ SPAWN_RULES.defaults.archetypes = {
     'stc': {
         inherit: 'tc',
         type: SUBTROP,
-        lowerWarmCore: 0.5,
+        lowerWarmCore: 0.45,
         upperWarmCore: 0.3
     },
     'd': {
@@ -171,10 +171,10 @@ SPAWN_RULES.defaults.archetypes = {
 SPAWN_RULES.defaults.doSpawn = function(b){
     // tropical waves
     if(random()<0.0068*sq((seasonalSine(b.tick)+1.01)/2)) b.spawnArchetype('tw');
-    if(Math.round(random(1, 640)) == 2) b.spawnArchetype('tw');
+    if(Math.round(random(1, 570)) == 2) b.spawnArchetype('tw');
 
     // extratropical cyclones
-    if(random()<0.01-0.002*seasonalSine(b.tick)) b.spawnArchetype('ex');
+    if(random()<0.01-0.0022*seasonalSine(b.tick)) b.spawnArchetype('ex');
     if(Math.round(random(1, 440)) == 2) b.spawnArchetype('ex');
 };
 
@@ -285,9 +285,9 @@ ENV_DEFS.defaults.jetstream = {
         [4,0.5,160,300,1,2]
     ],
     modifiers: {
-        peakLat: 0.22,
+        peakLat: 0.21,
         antiPeakLat: 0.43,
-        peakRange: 0.25,
+        peakRange: 0.2,
         antiPeakRange: 0.42
     }
 };
@@ -409,7 +409,7 @@ ENV_DEFS.defaults.ULSteering = {
         let jAngle = atan((j1-j0)/dx)+map(y-j0,-50,50,PI/3,-PI/4,true);                         // angle of jetstream at point
         let trof = y>j0 ? pow(1.84,map(jAngle,-PI/2,PI/2,3,-5))*pow(0.7,j/20)*jOP : 0;           // pole-eastward push from jetstream dips
         let tAngle = -PI/13;                                                                    // angle of push from jetstream dips
-        let ridging = 0.56-j0/HEIGHT-map(sqrt(map(s,-1,1,0,1)),0,1,0.15,0);                     // how much 'ridge' or 'trough' there is from jetstream
+        let ridging = 0.56-j0/HEIGHT-map(sqrt(map(s,-1,1,0,1)),0,1,0.17,0);                     // how much 'ridge' or 'trough' there is from jetstream
         // power of winds equatorward of jetstream
         let hadley = (map(ridging,-0.3,0.25,u.modifiers.hadleyUpperBound,1.5,true)+map(m,0,1,-1.5,1.5))*jOP*(y>j0?1:0)*1.05;
         // angle of winds equatorward of jetstream
@@ -418,7 +418,7 @@ ENV_DEFS.defaults.ULSteering = {
         let fAngle = 4.4*PI/8;                                                                    // angle of winds poleward of jetstream
 
         let a = map(u.noise(0),0,1,0,5*TAU);                                                    // noise angle
-        m = pow(1.65,map(m,0,1,-8,4))*jOP;                                                       // noise magnitude
+        m = pow(1.64,map(m,0,1,-8,4))*jOP;                                                       // noise magnitude
 
         // apply noise
         u.vec.rotate(a);
@@ -542,7 +542,7 @@ ENV_DEFS.defaults.SSTAnomaly = {
     version: 0,
     mapFunc: (u,x,y,z)=>{
         let v = u.noise(0);
-        v = v*1.95;
+        v = v*1.94;
         let i = v<1 ? -1 : 1;
         v = 1-abs(1-v);
         if(v===0) v = 0.000001;
@@ -607,7 +607,7 @@ ENV_DEFS.defaults.SST = {
         if(y<0) return 0;
         let anom = u.field('SSTAnomaly');
         let s = seasonalSine(z);
-        let w = map(cos(map(x,0,WIDTH,0,PI)),-1,1,0.75,1);
+        let w = map(cos(map(x,0,WIDTH,0,PI)),-1,1,0.775,1);
         let h0 = y/HEIGHT;
         let h1 = (sqrt(h0)+h0)/2;
         let h2 = sqrt(sqrt(h0));
@@ -759,8 +759,8 @@ STORM_ALGORITHM.defaults.steering = function(sys,vec,u){
     let ll = u.f("LLSteering");
     let ul = u.f("ULSteering");
     let d = sqrt(sys.depth);
-    let x = lerp(ll.x,ul.x,d)*0.8;       // Deeper systems follow upper-level steering more and lower-level steering less
-    let y = lerp(ll.y,ul.y,d)*0.8;
+    let x = lerp(ll.x,ul.x,d)*0.75;       // Deeper systems follow upper-level steering more and lower-level steering less
+    let y = lerp(ll.y,ul.y,d)*0.7;
     vec.set(x,y);
 };
 
@@ -779,14 +779,14 @@ STORM_ALGORITHM.defaults.core = function(sys,u){
         max(pow(map(SST,10,25,0,1,true),3),sys.lowerWarmCore)
     )*map(jet,0,75,sq(1-sys.depth),1,true);
     sys.lowerWarmCore = lerp(sys.lowerWarmCore,targetWarmCore,sys.lowerWarmCore>targetWarmCore ? map(jet,0,75,0.4,0.06,true) : 0.039);
-    sys.upperWarmCore = lerp(sys.upperWarmCore,sys.lowerWarmCore,sys.lowerWarmCore>sys.upperWarmCore ? 0.05 : 0.37);
+    sys.upperWarmCore = lerp(sys.upperWarmCore,sys.lowerWarmCore,sys.lowerWarmCore>sys.upperWarmCore ? 0.05 : 0.35);
     sys.lowerWarmCore = constrain(sys.lowerWarmCore,0,1);
     sys.upperWarmCore = constrain(sys.upperWarmCore,0,1);
     let tropicalness = constrain(map(sys.lowerWarmCore,0.5,1,0,1),0,sys.upperWarmCore);
     let nontropicalness = constrain(map(sys.lowerWarmCore,0.75,0,0,1),0,0.8);
     // Semi-Realistic Mode
     sys.organization *= 100;
-    if(!lnd) sys.organization += sq(map(SST,19.1,31,0,1,true))*(2.27+(constrain(log(moisture),-0.55,0)))*tropicalness*1.6;
+    if(!lnd) sys.organization += sq(map(SST,19,31,0,1,true))*(2.27+(constrain(log(moisture),-0.55,0)))*tropicalness*1.64;
     if(!lnd && sys.organization < 40) sys.organization += lerp(0,3,nontropicalness);
     sys.organization -= pow(2,4-((HEIGHT-sys.basin.hemY(sys.pos.y))/(HEIGHT*0.01)));
     sys.organization -= (pow(map(sys.depth,0,1,1.17,1.31),shear)-1)*map(sys.depth,0,1,4.7,1.2);
@@ -802,7 +802,7 @@ STORM_ALGORITHM.defaults.core = function(sys,u){
     sys.organization = constrain(sys.organization,0,100);
     sys.organization /= 100;
 
-    let targetPressure = 1010-25*log((lnd||SST<25)?1:map(SST,25,30,1,2))/log(1.17);
+    let targetPressure = 1010-25*log((lnd||SST<24.7)?1:map(SST,24.7,30,1,2))/log(1.16);
     targetPressure = lerp(1010,targetPressure,pow(sys.organization,3));
     sys.pressure = lerp(sys.pressure,targetPressure,(sys.pressure>targetPressure?0.05:0.08)*tropicalness);
     sys.pressure -= random(-3,3.5)*nontropicalness;
