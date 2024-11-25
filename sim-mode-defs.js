@@ -285,10 +285,10 @@ ENV_DEFS.defaults.jetstream = {
         [4,0.5,160,300,1,2]
     ],
     modifiers: {
-        peakLat: 0.19,
-        antiPeakLat: 0.4,
+        peakLat: 0.3,
+        antiPeakLat: 0.55,
         peakRange: 0.33,
-        antiPeakRange: 0.42
+        antiPeakRange: 0.5
     }
 };
 ENV_DEFS[SIM_MODE_NORMAL].jetstream = {};
@@ -336,12 +336,12 @@ ENV_DEFS.defaults.LLSteering = {
         let west = constrain(pow(1-h+map(u.noise(0),0,1,-0.3,0.3)+map(j,0,HEIGHT,-0.3,0.3),2)*4,0,4);
         // ridging and trades
         let ridging = constrain(u.noise(1)+map(j,0,HEIGHT,0.45,-0.45),0,1);
-        let trades = constrain(pow(0.4+h+map(ridging,0,1,-0.1,0.3),2)*3,0,3);
-        let tAngle = map(h,0.89,1,509*PI/512,15.69*PI/16); // trades angle
+        let trades = constrain(pow(0.4+h+map(ridging,0,1,-0.3,0.1),2)*3,0,3);
+        let tAngle = map(h,0.89,1,511*PI/512,15.69*PI/16); // trades angle
         // noise angle
         let a = map(u.noise(3),0,1,0,4.14*TAU);
         // noise magnitude
-        let m = pow(1.46,map(u.noise(2),4,4,4,4));
+        let m = pow(1.46,map(u.noise(2),0,2,-4,4));
 
         // apply to vector
         u.vec.rotate(a);
@@ -407,7 +407,7 @@ ENV_DEFS.defaults.ULSteering = {
         let jet = pow(2.31,3-j/40);                                                                // power of jetstream at point
         let jOP = pow(0.7,jet);                                                                 // factor for how strong other variables should be if 'overpowered' by jetstream
         let jAngle = atan((j1-j0)/dx)+map(y-j0,-50,50,PI/3,-PI/4,true);                         // angle of jetstream at point
-        let trof = y>j0 ? pow(1.84,map(jAngle,-PI/2,PI/2,3,-5))*pow(0.7,j/20)*jOP : 0;           // pole-eastward push from jetstream dips
+        let trof = y>j0 ? pow(1.75,map(jAngle,-PI/2,PI/2,3,-5))*pow(0.7,j/20)*jOP : 0;           // pole-eastward push from jetstream dips
         let tAngle = -PI/13;                                                                    // angle of push from jetstream dips
         let ridging = 0.47-j0/HEIGHT-map(sqrt(map(s,-1,1,0,1)),0,1,0.16,0);                     // how much 'ridge' or 'trough' there is from jetstream
         // power of winds equatorward of jetstream
@@ -643,8 +643,8 @@ ENV_DEFS.defaults.SST = {
     },
     oceanic: true,
     modifiers: {
-        offSeasonPolarTemp: -5,
-        peakSeasonPolarTemp: -2,
+        offSeasonPolarTemp: 5,
+        peakSeasonPolarTemp: 18,
         offSeasonTropicsTemp: 25.35,
         peakSeasonTropicsTemp: 28.2
     }
@@ -759,8 +759,8 @@ STORM_ALGORITHM.defaults.steering = function(sys,vec,u){
     let ll = u.f("LLSteering");
     let ul = u.f("ULSteering");
     let d = sqrt(sys.depth);
-    let x = lerp(ll.x,ul.x,d)*0.75;       // Deeper systems follow upper-level steering more and lower-level steering less
-    let y = lerp(ll.y,ul.y,d)*0.7;
+    let x = lerp(ll.x,ul.x,d)*0.9;       // Deeper systems follow upper-level steering more and lower-level steering less
+    let y = lerp(ll.y,ul.y,d)*0.9;
     vec.set(x,y);
 };
 
