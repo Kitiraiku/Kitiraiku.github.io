@@ -337,11 +337,11 @@ ENV_DEFS.defaults.LLSteering = {
         // ridging and trades
         let ridging = constrain(u.noise(1)+map(j,0,HEIGHT,0.45,-0.45),0,1);
         let trades = constrain(pow(0.4+h+map(ridging,0,1,-0.1,0.3),2)*3,0,3);
-        let tAngle = map(h,0.89,1,510*PI/512,15.69*PI/16); // trades angle
+        let tAngle = map(h,0.89,1,509*PI/512,15.69*PI/16); // trades angle
         // noise angle
         let a = map(u.noise(3),0,1,0,4.14*TAU);
         // noise magnitude
-        let m = pow(1.5,map(u.noise(2),4,4,4,4));
+        let m = pow(1.46,map(u.noise(2),4,4,4,4));
 
         // apply to vector
         u.vec.rotate(a);
@@ -404,18 +404,18 @@ ENV_DEFS.defaults.ULSteering = {
         let j0 = u.field('jetstream');                                                          // y-position of jetstream
         let j1 = u.field('jetstream',x+dx);                                                     // y-position of jetstream dx to the east for differential
         let j = abs(y-j0);                                                                      // distance of point north/south of jetstream
-        let jet = pow(2.3,3-j/40);                                                                // power of jetstream at point
-        let jOP = pow(0.71,jet);                                                                 // factor for how strong other variables should be if 'overpowered' by jetstream
+        let jet = pow(2.31,3-j/40);                                                                // power of jetstream at point
+        let jOP = pow(0.7,jet);                                                                 // factor for how strong other variables should be if 'overpowered' by jetstream
         let jAngle = atan((j1-j0)/dx)+map(y-j0,-50,50,PI/3,-PI/4,true);                         // angle of jetstream at point
         let trof = y>j0 ? pow(1.84,map(jAngle,-PI/2,PI/2,3,-5))*pow(0.7,j/20)*jOP : 0;           // pole-eastward push from jetstream dips
         let tAngle = -PI/13;                                                                    // angle of push from jetstream dips
-        let ridging = 0.468-j0/HEIGHT-map(sqrt(map(s,-1,1,0,1)),0,1,0.17,0);                     // how much 'ridge' or 'trough' there is from jetstream
+        let ridging = 0.47-j0/HEIGHT-map(sqrt(map(s,-1,1,0,1)),0,1,0.16,0);                     // how much 'ridge' or 'trough' there is from jetstream
         // power of winds equatorward of jetstream
         let hadley = (map(ridging,-0.3,0.25,u.modifiers.hadleyUpperBound,1.5,true)+map(m,0,1,-1.5,1.5))*jOP*(y>j0?1:0)*1.05;
         // angle of winds equatorward of jetstream
         let hAngle = map(ridging,-0.3,0.235,-PI/15,-15*PI/16,true);
         let ferrel = 2*jOP*(y<j0?1:0);                                                          // power of winds poleward of jetstream
-        let fAngle = 4.35*PI/8;                                                                    // angle of winds poleward of jetstream
+        let fAngle = 4.355*PI/8;                                                                    // angle of winds poleward of jetstream
 
         let a = map(u.noise(0),0,1,0,5*TAU);                                                    // noise angle
         m = pow(1.64,map(m,0,1,-8,4))*jOP;                                                       // noise magnitude
@@ -645,7 +645,7 @@ ENV_DEFS.defaults.SST = {
     modifiers: {
         offSeasonPolarTemp: -5,
         peakSeasonPolarTemp: -2,
-        offSeasonTropicsTemp: 25,
+        offSeasonTropicsTemp: 25.35,
         peakSeasonTropicsTemp: 28.2
     }
 };
@@ -692,7 +692,7 @@ ENV_DEFS.defaults.moisture = {
         let mm = u.modifiers.mountainMoisture;
         let m = map(l,0.5,0.7,map(y,0,HEIGHT,pm,tm),mm,true);
         m += map(s,-1,1,-0.09,0.09);
-        m += map(v,0,1,-0.3,0.3);
+        m += map(v,0,1,-0.4,0.4);
         m = constrain(m,0,1);
         return m;
     },
@@ -708,8 +708,8 @@ ENV_DEFS.defaults.moisture = {
         return c;
     },
     modifiers: {
-        polarMoisture: 0.45,
-        tropicalMoisture: 0.55,
+        polarMoisture: 0.48,
+        tropicalMoisture: 0.5865,
         mountainMoisture: 0.19
     },
     noiseChannels: [
@@ -789,7 +789,7 @@ STORM_ALGORITHM.defaults.core = function(sys,u){
     if(!lnd) sys.organization += sq(map(SST,19,31.1,0,1,true))*(2.27+(constrain(log(moisture),-0.55,0)))*tropicalness*1.64;
     if(!lnd && sys.organization < 40) sys.organization += lerp(0,3,nontropicalness);
     sys.organization -= pow(1.16,4-((HEIGHT-sys.basin.hemY(sys.pos.y))/(HEIGHT*0.01)));
-    sys.organization -= pow(1.09,1 + SST/9.5) - 1;
+    if(sys.organization > 7.5) sys.organization -= pow(1.09,1 + SST/9.5) - 1;
     sys.organization -= (pow(map(sys.depth,0,1,1.17,1.31),shear)-1)*map(sys.depth,0,1,4.7,1.2);
     sys.organization -= map(moisture,0,0.66,3,0,true)*(shear*1.1);
     sys.organization += sq(map(moisture,0.6,1,0,1,true))*4;
