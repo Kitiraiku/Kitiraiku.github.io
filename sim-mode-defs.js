@@ -404,12 +404,12 @@ ENV_DEFS.defaults.ULSteering = {
         let j0 = u.field('jetstream');                                                          // y-position of jetstream
         let j1 = u.field('jetstream',x+dx);                                                     // y-position of jetstream dx to the east for differential
         let j = abs(y-j0);                                                                      // distance of point north/south of jetstream
-        let jet = pow(2.2,3-j/40);                                                                // power of jetstream at point
+        let jet = pow(2.3,3-j/40);                                                                // power of jetstream at point
         let jOP = pow(0.71,jet);                                                                 // factor for how strong other variables should be if 'overpowered' by jetstream
         let jAngle = atan((j1-j0)/dx)+map(y-j0,-50,50,PI/3,-PI/4,true);                         // angle of jetstream at point
         let trof = y>j0 ? pow(1.84,map(jAngle,-PI/2,PI/2,3,-5))*pow(0.7,j/20)*jOP : 0;           // pole-eastward push from jetstream dips
         let tAngle = -PI/13;                                                                    // angle of push from jetstream dips
-        let ridging = 0.56-j0/HEIGHT-map(sqrt(map(s,-1,1,0,1)),0,1,0.17,0);                     // how much 'ridge' or 'trough' there is from jetstream
+        let ridging = 0.45-j0/HEIGHT-map(sqrt(map(s,-1,1,0,1)),0,1,0.17,0);                     // how much 'ridge' or 'trough' there is from jetstream
         // power of winds equatorward of jetstream
         let hadley = (map(ridging,-0.3,0.25,u.modifiers.hadleyUpperBound,1.5,true)+map(m,0,1,-1.5,1.5))*jOP*(y>j0?1:0)*1.05;
         // angle of winds equatorward of jetstream
@@ -776,10 +776,10 @@ STORM_ALGORITHM.defaults.core = function(sys,u){
     
     let targetWarmCore = (lnd ?
         sys.lowerWarmCore :
-        max(pow(map(SST,10,25,0,1,true),3),sys.lowerWarmCore)
+        max(pow(map(SST,10,24,0,1,true),3),sys.lowerWarmCore)
     )*map(jet,0,75,sq(1-sys.depth),1,true);
     sys.lowerWarmCore = lerp(sys.lowerWarmCore,targetWarmCore,sys.lowerWarmCore>targetWarmCore ? map(jet,0,75,0.4,0.06,true) : 0.039);
-    sys.upperWarmCore = lerp(sys.upperWarmCore,sys.lowerWarmCore,sys.lowerWarmCore>sys.upperWarmCore ? 0.05 : 0.35);
+    sys.upperWarmCore = lerp(sys.upperWarmCore,sys.lowerWarmCore,sys.lowerWarmCore>sys.upperWarmCore ? 0.05 : 0.349);
     sys.lowerWarmCore = constrain(sys.lowerWarmCore,0,1);
     sys.upperWarmCore = constrain(sys.upperWarmCore,0,1);
     let tropicalness = constrain(map(sys.lowerWarmCore,0.5,1,0,1),0,sys.upperWarmCore);
@@ -788,13 +788,14 @@ STORM_ALGORITHM.defaults.core = function(sys,u){
     sys.organization *= 100;
     if(!lnd) sys.organization += sq(map(SST,19,31,0,1,true))*(2.27+(constrain(log(moisture),-0.55,0)))*tropicalness*1.64;
     if(!lnd && sys.organization < 40) sys.organization += lerp(0,3,nontropicalness);
-    sys.organization -= pow(1.2,4-((HEIGHT-sys.basin.hemY(sys.pos.y))/(HEIGHT*0.01)));
+    sys.organization -= pow(1.16,4-((HEIGHT-sys.basin.hemY(sys.pos.y))/(HEIGHT*0.01)));
+    sys.organization -= log(SST/7);
     sys.organization -= (pow(map(sys.depth,0,1,1.17,1.31),shear)-1)*map(sys.depth,0,1,4.7,1.2);
     sys.organization -= map(moisture,0,0.66,3,0,true)*(shear*1.1);
     sys.organization += sq(map(moisture,0.6,1,0,1,true))*4;
-    if(!lnd) sys.organization += moisture/5;
+    if(!lnd) sys.organization += moisture/2;
     if((sys.organization > random(30,39)) && (Math.round(random(1,152 - shear*3 + sys.organization/10)) == 2)) sys.organization -= random(3,15); // EWRC Potential
-    if(random(1,(Math.round(100 - shear*4.5))) == 1) sys.organization -= random(1,8); // General convective issues and etc.
+    if(random(1,(Math.round(70 - shear*5))) == 1) sys.organization -= random(1,8); // General convective issues and etc.
     if((moisture < 0.5) && (!(sys.organization > 35) || Math.round(random(1,70)) == 2)) sys.organization -= random(1,3); // Convective degrade due to lower moisture
     if((moisture < 0.25) && (random(1,60) < 3)) sys.organization -= random(1,10); // Intenser degrade due to very lacking moisture
     sys.organization -= (pow(1.8,shear))*(0.2-sys.organization/100*0.155);
