@@ -170,12 +170,12 @@ SPAWN_RULES.defaults.archetypes = {
 
 SPAWN_RULES.defaults.doSpawn = function(b){
     // tropical waves
-    if(random()<0.0068*sq((seasonalSine(b.tick)+1.01)/2)) b.spawnArchetype('tw');
-    if(Math.round(random(1, 570)) == 2) b.spawnArchetype('tw');
+    if(random()<0.006*sq((seasonalSine(b.tick)+1.01)/2)) b.spawnArchetype('tw');
+    if(Math.round(random(1, 600)) == 1) b.spawnArchetype('tw');
 
     // extratropical cyclones
-    if(random()<0.01-0.0022*seasonalSine(b.tick)) b.spawnArchetype('ex');
-    if(Math.round(random(1, 440)) == 2) b.spawnArchetype('ex');
+    if(random()<0.01-0.002*seasonalSine(b.tick)) b.spawnArchetype('ex');
+    if(Math.round(random(1, 590)) == 2) b.spawnArchetype('ex');
 };
 
 // -- Normal Mode -- //
@@ -269,7 +269,7 @@ ENV_DEFS[SIM_MODE_EXPERIMENTAL] = {}; // "Experimental" simulation mode
 ENV_DEFS.defaults.jetstream = {
     version: 0,
     mapFunc: (u,x,y,z)=>{
-        let v = u.noise(0,x-z*3,0,z);
+        let v = u.noise(0,x-z*2.9,0,z);
         let peakLat = u.modifiers.peakLat;
         let antiPeakLat = u.modifiers.antiPeakLat;
         let peakRange = u.modifiers.peakRange;
@@ -285,9 +285,9 @@ ENV_DEFS.defaults.jetstream = {
         [4,0.5,160,300,1,2]
     ],
     modifiers: {
-        peakLat: 0.21,
-        antiPeakLat: 0.43,
-        peakRange: 0.3,
+        peakLat: 0.19,
+        antiPeakLat: 0.4,
+        peakRange: 0.33,
         antiPeakRange: 0.42
     }
 };
@@ -684,7 +684,7 @@ ENV_DEFS.defaults.moisture = {
     version: 0,
     mapFunc: (u,x,y,z)=>{
         let v = u.noise(0);
-        v = v*1.07;
+        v = v*1.1;
         let s = seasonalSine(z);
         let l = land.get(x,u.basin.hemY(y));
         let pm = u.modifiers.polarMoisture;
@@ -708,7 +708,7 @@ ENV_DEFS.defaults.moisture = {
         return c;
     },
     modifiers: {
-        polarMoisture: 0.42,
+        polarMoisture: 0.45,
         tropicalMoisture: 0.55,
         mountainMoisture: 0.19
     },
