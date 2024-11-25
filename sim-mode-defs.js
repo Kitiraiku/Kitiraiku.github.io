@@ -794,9 +794,9 @@ STORM_ALGORITHM.defaults.core = function(sys,u){
     sys.organization += sq(map(moisture,0.6,1,0,1,true))*4;
     if(!lnd) sys.organization += moisture/5;
     if((sys.organization > random(30,43)) && (Math.round(random(1,152 - shear*3 + sys.organization/10)) == 2)) sys.organization -= random(3,15); // EWRC Potential
-    if(random(1,(Math.round(110 - shear*3.9)) == 2) sys.organization -= random(1,8); // General convective issues and etc.
-    if(moisture < 0.5 && (!(sys.organization > 35) || Math.round(random(1,70)) == 2)) sys.organization -= random(1,3); // Convective degrade due to lower moisture
-    if(moisture < 0.25 && (random(1,60) < 3)) sys.organization -= random(1,10); // Intenser degrade due to very lacking moisture
+    if(random(1,(Math.round(110 - shear*3.9))) == 2) sys.organization -= random(1,8); // General convective issues and etc.
+    if((moisture < 0.5) && (!(sys.organization > 35) || Math.round(random(1,70)) == 2)) sys.organization -= random(1,3); // Convective degrade due to lower moisture
+    if((moisture < 0.25) && (random(1,60) < 3)) sys.organization -= random(1,10); // Intenser degrade due to very lacking moisture
     sys.organization -= (pow(1.8,shear))*(0.2-sys.organization/100*0.155);
     sys.organization -= pow(1.2,20-SST)*tropicalness*0.93;
     sys.organization = constrain(sys.organization,0,100);
