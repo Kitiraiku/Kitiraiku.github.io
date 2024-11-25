@@ -790,13 +790,13 @@ STORM_ALGORITHM.defaults.core = function(sys,u){
     if(!lnd && sys.organization < 40) sys.organization += lerp(0,3,nontropicalness);
     sys.organization -= pow(2,4-((HEIGHT-sys.basin.hemY(sys.pos.y))/(HEIGHT*0.01)));
     sys.organization -= (pow(map(sys.depth,0,1,1.17,1.31),shear)-1)*map(sys.depth,0,1,4.7,1.2);
-    sys.organization -= map(moisture,0,0.66,3,0,true)*shear;
-    sys.organization += sq(map(moisture,0.6,1,0,1,true))*4.36;
+    sys.organization -= map(moisture,0,0.66,3,0,true)*(shear*1.1);
+    sys.organization += sq(map(moisture,0.6,1,0,1,true))*4.35;
     if(!lnd) sys.organization += moisture/5.29;
-    if(sys.organization > 35 && Math.round(random(1,152 - shear*3 + sys.organization/10)) == 2) sys.organization -= random(3,15); // EWRC Potential
+    if(sys.organization > random(30,43) && Math.round(random(1,152 - shear*3 + sys.organization/10)) == 2) sys.organization -= random(3,15); // EWRC Potential
     if(Math.round(random(1,110 - shear*3.6)) == 2) sys.organization -= random(1.1,8); // General convective issues and etc.
-    if(moisture < 0.48 && (!(sys.organization > 35) || Math.round(random(1,70)) == 2) && Math.round(random(1,64)) == 2) sys.organization -= random(1.5,8); // Convective degrade due to lower moisture
-    if(moisture < 0.3 && Math.round(random(1,60)) == 2) sys.organization -= random(1.5,8.1); // Intenser degrade due to much lacking moisture
+    if(moisture < 0.5 && (!(sys.organization > 35) || Math.round(random(1,70)) == 2) && Math.round(random(1,64)) == 2) sys.organization -= random(1,3); // Convective degrade due to lower moisture
+    if(moisture < 0.27 && Math.round(random(1,60)) == 2) sys.organization -= random(1.5,8.1); // Intenser degrade due to much lacking moisture
     sys.organization -= (pow(1.8,shear))*(0.2-sys.organization/100*0.155);
     sys.organization -= pow(1.3,20-SST)*tropicalness*0.89;
     sys.organization = constrain(sys.organization,0,100);
@@ -807,7 +807,7 @@ STORM_ALGORITHM.defaults.core = function(sys,u){
     sys.pressure = lerp(sys.pressure,targetPressure,(sys.pressure>targetPressure?0.05:0.08)*tropicalness);
     sys.pressure -= random(-3,3.5)*nontropicalness;
     if(sys.organization<0.3) sys.pressure += random(-2,2.6)*tropicalness;
-    sys.pressure += random(constrain(970-sys.pressure,0,40))*nontropicalness*0.97;
+    sys.pressure += random(constrain(970-sys.pressure,0,40))*nontropicalness*0.96;
     sys.pressure += 0.51*sys.interaction.shear/(1+map(sys.lowerWarmCore,0,1,4,0));
     sys.pressure += map(jet,0,75,5*pow(1-sys.depth,4),0,true);
 
@@ -820,7 +820,7 @@ STORM_ALGORITHM.defaults.core = function(sys,u){
         1,map(
             sys.organization,
             0,1,
-            sys.depth*pow(0.95,shear),max(map(sys.pressure,1010,950,0,0.7,true),sys.depth)
+            sys.depth*pow(0.95,shear),max(map(sys.pressure,1010.8,950,0,0.7,true),sys.depth)
         )
     );
     sys.depth = lerp(sys.depth,targetDepth,0.05);
@@ -902,7 +902,7 @@ STORM_ALGORITHM.defaults.typeDetermination = function(sys,u){
             sys.type = sys.lowerWarmCore<0.55 ? EXTROP : ((sys.organization<0.4 && sys.windSpeed<50) || sys.windSpeed<20) ? sys.upperWarmCore<0.56 ? EXTROP : TROPWAVE : sys.upperWarmCore<0.56 ? SUBTROP : TROP;
             break;
         case SUBTROP:
-            sys.type = sys.lowerWarmCore<0.55 ? EXTROP : ((sys.organization<0.4 && sys.windSpeed<60) || sys.windSpeed<20) ? sys.upperWarmCore<0.57 ? EXTROP : TROPWAVE : sys.upperWarmCore<0.57 ? SUBTROP : TROP;
+            sys.type = sys.lowerWarmCore<0.55 ? EXTROP : ((sys.organization<0.39 && sys.windSpeed<56) || sys.windSpeed<20) ? sys.upperWarmCore<0.57 ? EXTROP : TROPWAVE : sys.upperWarmCore<0.57 ? SUBTROP : TROP;
             break;
         case TROPWAVE:
             sys.type = sys.lowerWarmCore<0.55 ? EXTROP : (sys.organization<0.45 || sys.windSpeed<25) ? sys.upperWarmCore<0.56 ? EXTROP : TROPWAVE : sys.upperWarmCore<0.56 ? SUBTROP : TROP;
