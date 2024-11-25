@@ -15,6 +15,7 @@ const SIM_MODE_EXPERIMENTAL = 4;
 const ACTIVE_ATTRIBS = {};
 
 ACTIVE_ATTRIBS.defaults = [
+    'broadening',
     'organization',
     'lowerWarmCore',
     'upperWarmCore',
@@ -22,6 +23,7 @@ ACTIVE_ATTRIBS.defaults = [
 ];
 
 ACTIVE_ATTRIBS[SIM_MODE_EXPERIMENTAL] = [
+    // 'broadening',
     'organization',
     'lowerWarmCore',
     'upperWarmCore',
@@ -50,6 +52,7 @@ SPAWN_RULES.defaults.archetypes = {
     'tw': {
         x: ()=>random(0,WIDTH-1),
         y: (b)=>b.hemY(random(HEIGHT*0.65,HEIGHT*0.95)),
+        broadening: false,
         pressure: [1000, 1020],
         windSpeed: [15, 35],
         type: TROPWAVE,
@@ -61,6 +64,7 @@ SPAWN_RULES.defaults.archetypes = {
     'ex': {
         x: ()=>random(0,WIDTH-1),
         y: (b,x)=> ifJetstreamBound(b,x),
+        broadening: false,
         pressure: [1000, 1020],
         windSpeed: [15, 35],
         type: EXTROP,
@@ -84,6 +88,7 @@ SPAWN_RULES.defaults.archetypes = {
         pressure: 1005,
         windSpeed: 25,
         type: TROP,
+        broadening: false,
         organization: 1,
         lowerWarmCore: 1,
         upperWarmCore: 1,
@@ -199,6 +204,7 @@ SPAWN_RULES[SIM_MODE_WILD].archetypes = {
         pressure: [1000, 1020],
         windSpeed: [15, 35],
         type: TROPWAVE,
+        broadening: false,
         organization: [0,0.3],
         lowerWarmCore: 1,
         upperWarmCore: 1,
@@ -793,9 +799,8 @@ STORM_ALGORITHM.defaults.core = function(sys,u){
     sys.organization -= map(moisture,0,0.66,3,0,true)*(shear*1.1);
     sys.organization += sq(map(moisture,0.6,1,0,1,true))*4;
     if(!lnd) sys.organization += moisture/3;
-    if((sys.organization > random(26,33)) && (Math.round(random(1,100 - shear*3 + sys.organization/10)) == 2)) sys.organization -= random(8,15); // EWRC Potential
     if(random(1,(Math.round(70 - shear*5))) == 1) sys.organization -= random(1,12); // General convective issues and etc.
-    if((moisture < 0.5) && (!(sys.organization > 60) || Math.round(random(1,70)) == 2)) sys.organization -= random(1,3); // Convective degrade due to lower moisture
+    if((moisture < 0.5) && (sys.organization < 61) || (Math.round(random(1,70)) == 2)) sys.organization -= random(1,3); // Convective degrade due to lower moisture
     if((moisture < 0.38) && (random(1,60) < 3)) sys.organization -= random(2,4); // Intenser degrade due to very lacking moisture
     sys.organization -= (pow(1.8,shear))*(0.2-sys.organization/100);
     sys.organization -= pow(1.2,20-SST)*tropicalness*0.93;
@@ -806,8 +811,12 @@ STORM_ALGORITHM.defaults.core = function(sys,u){
     targetPressure = lerp(1010,targetPressure,pow(sys.organization,3));
     sys.pressure = lerp(sys.pressure,targetPressure,(sys.pressure>targetPressure?0.05:0.08)*tropicalness);
     sys.pressure -= random(-3,3.5)*nontropicalness;
-    if((sys.organization < 0.56) && (random(0,60) == 0)) sys.broadening = true;
-    if(sys.organization > 0.075) sys.pressure += pow(1.5,1 + SST/9.5) - 1;
+    if(((sys.organization < 0.56) && (random(0,60) == 0)) || ((random(0,100) == 0) && (moisture < 0.5)) || ((random(0,70) == 0) && (SST < 26.5) && (moisture < 0.6)))
+        {sys.broadening = true;} // Complications
+    else if((moisture < 0.25) && (random(0,25) == 25)) sys.broadening = true; // Dry air ingestion
+    else if((sys.pressure < random(960,990)) && (random(0,200) == 0)) sys.broadening = true; // EWRC
+    if(sys.organization > 0.99) sys.pressure += pow(1.5,1 + SST/9.5) - 1;
+    if(random(1,(Math.round(70 - shear))) == 1) sys.pressure += random(1,4);
     if(sys.organization < 0.3) sys.pressure += random(-2,2.6)*tropicalness;
     sys.pressure += random(constrain(970-sys.pressure,0,40))*nontropicalness*0.96;
     sys.pressure += 0.51*sys.interaction.shear/(1+map(sys.lowerWarmCore,0,1,4,0));
@@ -817,9 +826,10 @@ STORM_ALGORITHM.defaults.core = function(sys,u){
 
     let targetWind = map(sys.pressure,1030,900,1,160)*map(sys.lowerWarmCore,1,0,1,0.6);
     sys.windSpeed = lerp(sys.windSpeed,targetWind,0.15);
-    if(sys.broadening) sys.windSpeed -= random(1,2);
-    if((sys.broadening && (sys.organization > 0.7)) && random(0,9) == 9) sys.broadening = false;
-
+    if(sys.broadening) sys.windSpeed -= random(0,2);
+    if((random(0,50) == 50) && (moisture > 0.69) && ((SST > 25.9) && (sys.organization < 1))) sys.broadening = false;
+    if((random(0,500) == 50) && (moisture > 0.69)) sys.broadening = false;
+    
     let targetDepth = map(
         sys.upperWarmCore,
         0,1,
