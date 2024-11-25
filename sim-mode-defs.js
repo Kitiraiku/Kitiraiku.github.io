@@ -331,17 +331,17 @@ ENV_DEFS.defaults.LLSteering = {
         // Jetstream
         let j = u.field('jetstream');
         // Cosine curve from 0 at poleward side of map to 1 at equatorward side
-        let h = map(cos(map(y,0,HEIGHT,0,PI)),-1.2,0.45,0.45,0);
+        let h = map(cos(map(y,0,HEIGHT,0,PI)),-1.1,0.6,0.6,0);
         // westerlies
         let west = constrain(pow(1-h+map(u.noise(0),0,1,-0.3,0.3)+map(j,0,HEIGHT,-0.3,0.3),2)*4,0,4);
         // ridging and trades
         let ridging = constrain(u.noise(1)+map(j,0,HEIGHT,0.45,-0.45),0,1);
         let trades = constrain(pow(0.4+h+map(ridging,0,1,-0.3,0.1),2)*3,0,3);
-        let tAngle = map(h,0.89,1,511*PI/512,15.69*PI/16); // trades angle
+        let tAngle = map(h,0.89,1,511*PI/512,15.9*PI/16); // trades angle
         // noise angle
         let a = map(u.noise(3),0,1,0,4.14*TAU);
         // noise magnitude
-        let m = pow(1.46,map(u.noise(2),0,2,-4,4));
+        let m = pow(1.46,map(u.noise(2),0,2,-6,4));
 
         // apply to vector
         u.vec.rotate(a);
@@ -684,7 +684,7 @@ ENV_DEFS.defaults.moisture = {
     version: 0,
     mapFunc: (u,x,y,z)=>{
         let v = u.noise(0);
-        v = v*1.1;
+        v = v*0.9;
         let s = seasonalSine(z);
         let l = land.get(x,u.basin.hemY(y));
         let pm = u.modifiers.polarMoisture;
@@ -708,8 +708,8 @@ ENV_DEFS.defaults.moisture = {
         return c;
     },
     modifiers: {
-        polarMoisture: 0.48,
-        tropicalMoisture: 0.5865,
+        polarMoisture: 0.47,
+        tropicalMoisture: 0.58,
         mountainMoisture: 0.19
     },
     noiseChannels: [
@@ -786,19 +786,18 @@ STORM_ALGORITHM.defaults.core = function(sys,u){
     let nontropicalness = constrain(map(sys.lowerWarmCore,0.75,0,0,1),0,0.8);
     // Semi-Realistic Mode
     sys.organization *= 100;
-    if(!lnd) sys.organization += sq(map(SST,19,31.1,0,1,true))*(2.27+(constrain(log(moisture),-0.55,0)))*tropicalness*1.64;
+    if(!lnd) sys.organization += sq(map(SST,10,29,0,1,true))*(2.27+(constrain(log(moisture),-0.55,0)))*tropicalness*1.64;
     if(!lnd && sys.organization < 40) sys.organization += lerp(0,3,nontropicalness);
     sys.organization -= pow(1.16,4-((HEIGHT-sys.basin.hemY(sys.pos.y))/(HEIGHT*0.01)));
-    if(sys.organization > 7.5) sys.organization -= pow(1.09,1 + SST/9.5) - 1;
-    sys.organization -= (pow(map(sys.depth,0,1,1.17,1.31),shear)-1)*map(sys.depth,0,1,4.7,1.2);
+    sys.organization -= (pow(map(sys.depth,0,1,1.17,1.31),shear)-1)*map(sys.depth,0,1,4.6,1.2);
     sys.organization -= map(moisture,0,0.66,3,0,true)*(shear*1.1);
     sys.organization += sq(map(moisture,0.6,1,0,1,true))*4;
     if(!lnd) sys.organization += moisture/3;
-    if((sys.organization > random(26,33)) && (Math.round(random(1,100 - shear*3 + sys.organization/10)) == 2)) sys.organization -= random(3,15); // EWRC Potential
-    if(random(1,(Math.round(70 - shear*5))) == 1) sys.organization -= random(1,8); // General convective issues and etc.
-    if((moisture < 0.5) && (!(sys.organization > 35) || Math.round(random(1,70)) == 2)) sys.organization -= random(1,3); // Convective degrade due to lower moisture
-    if((moisture < 0.25) && (random(1,60) < 3)) sys.organization -= random(1,10); // Intenser degrade due to very lacking moisture
-    sys.organization -= (pow(1.8,shear))*(0.2-sys.organization/100*0.155);
+    if((sys.organization > random(26,33)) && (Math.round(random(1,100 - shear*3 + sys.organization/10)) == 2)) sys.organization -= random(8,15); // EWRC Potential
+    if(random(1,(Math.round(70 - shear*5))) == 1) sys.organization -= random(1,12); // General convective issues and etc.
+    if((moisture < 0.5) && (!(sys.organization > 60) || Math.round(random(1,70)) == 2)) sys.organization -= random(1,3); // Convective degrade due to lower moisture
+    if((moisture < 0.38) && (random(1,60) < 3)) sys.organization -= random(2,4); // Intenser degrade due to very lacking moisture
+    sys.organization -= (pow(1.8,shear))*(0.2-sys.organization/100);
     sys.organization -= pow(1.2,20-SST)*tropicalness*0.93;
     sys.organization = constrain(sys.organization,0,100);
     sys.organization /= 100;
@@ -807,14 +806,19 @@ STORM_ALGORITHM.defaults.core = function(sys,u){
     targetPressure = lerp(1010,targetPressure,pow(sys.organization,3));
     sys.pressure = lerp(sys.pressure,targetPressure,(sys.pressure>targetPressure?0.05:0.08)*tropicalness);
     sys.pressure -= random(-3,3.5)*nontropicalness;
-    if(sys.organization<0.3) sys.pressure += random(-2,2.6)*tropicalness;
+    if((sys.organization < 0.56) && (random(0,60) == 0)) sys.broadening = true;
+    if(sys.organization > 0.075) sys.pressure += pow(1.5,1 + SST/9.5) - 1;
+    if(sys.organization < 0.3) sys.pressure += random(-2,2.6)*tropicalness;
     sys.pressure += random(constrain(970-sys.pressure,0,40))*nontropicalness*0.96;
     sys.pressure += 0.51*sys.interaction.shear/(1+map(sys.lowerWarmCore,0,1,4,0));
     sys.pressure += map(jet,0,75,5*pow(1-sys.depth,4),0,true);
-    if(lnd && (sys.organization < 0.02)) sys.pressure += (random(0,3) - 1) / 3;
+    if(lnd && (sys.organization < 0.05)) sys.pressure += (random(0,3) - 1) / 2;
+    if(sys.broadening) sys.pressure += random(0,3) - 1;
 
     let targetWind = map(sys.pressure,1030,900,1,160)*map(sys.lowerWarmCore,1,0,1,0.6);
     sys.windSpeed = lerp(sys.windSpeed,targetWind,0.15);
+    if(sys.broadening) sys.windSpeed -= random(1,2);
+    if((sys.broadening && (sys.organization > 0.7)) && random(0,9) == 9) sys.broadening = false;
 
     let targetDepth = map(
         sys.upperWarmCore,
@@ -852,26 +856,28 @@ STORM_ALGORITHM[SIM_MODE_EXPERIMENTAL].core = function(sys,u){
     let nontropicalness = constrain(map(sys.lowerWarmCore,0.75,0,0,1),0,0.8);
     // THIS IS STORMS ON DRUGS ALGORITHM!!!
     sys.organization *= 100;
-    if(!lnd) sys.organization += sq(map(SST,19.1,31,0,1,true))*(2.4+(constrain(log(moisture),-0.45,0)))*tropicalness*2.2;
+    if(!lnd) sys.organization += sq(map(SST,10,29,0,1,true))*(2.4+(constrain(log(moisture),-0.45,0)))*tropicalness*2.2;
     if(!lnd && sys.organization < 40) sys.organization += lerp(0,3,nontropicalness);
-    sys.organization -= pow(2,4-((HEIGHT-sys.basin.hemY(sys.pos.y))/(HEIGHT*0.01)));
+    sys.organization -= pow(2,4-((HEIGHT-sys.basin.hemY(sys.pos.y))/(HEIGHT*0.01))); // THIS IS STORMS ON DRUGS ALGORITHM!!!
     sys.organization -= (pow(map(sys.depth,0,1,1.17,1.31),shear)-1)*map(sys.depth,0,1,4.7,1.2);
     sys.organization -= map(moisture,0,0.66,3,0,true)*shear*0.87;
     sys.organization += sq(map(moisture,0.6,1,0,1,true))*4.7;
-    if(!lnd) sys.organization += moisture/4;
-    if(sys.organization > 35 && Math.round(random(1,150 - shear*3 + sys.organization/10)) == 2) sys.organization -= random(4,8); // EWRC Potential
-    if(Math.round(random(1,140 - shear*3.6)) == 2) sys.organization -= random(1.1,5); // General convective issues and etc.
+    if(!lnd) sys.organization += moisture/4;  // THIS IS STORMS ON DRUGS ALGORITHM!!!
+    // THIS IS STORMS ON DRUGS ALGORITHM!!!// THIS IS STORMS ON DRUGS ALGORITHM!!!
+    if(sys.organization > 35 && Math.round(random(1,150 - shear*3 + sys.organization/10)) == 2) sys.organization -= random(8,15); // EWRC Potential
+    if(Math.round(random(1,130 - shear*3.6)) == 2) sys.organization -= random(1,12); // General convective issues and etc.
     if(moisture < 0.48 && (!(sys.organization > 35) || Math.round(random(1,105)) == 2) && Math.round(random(1,75)) == 2) sys.organization -= random(1.5,5); // Convective degrade due to lower moisture
-    if(moisture < 0.3 && Math.round(random(1,69)) == 2) sys.organization -= random(1.5,4); // Intenser degrade due to much lacking moisture
-    sys.organization -= (pow(1.73,shear))*(0.16-sys.organization/100*0.18);
+    if(moisture < 0.31 && Math.round(random(1,69)) == 2) sys.organization -= random(2,4); // Intenser degrade due to much lacking moisture  // THIS IS STORMS ON DRUGS ALGORITHM!!!
+    sys.organization -= (pow(1.73,shear))*(0.16-sys.organization/100*0.18);            // THIS IS STORMS ON DRUGS ALGORITHM!!!
     sys.organization -= pow(1.3,20-SST)*tropicalness*0.85;
-    sys.organization = constrain(sys.organization,0,100);
+    sys.organization = constrain(sys.organization,0,100); // THIS IS STORMS ON DRUGS ALGORITHM!!!
     sys.organization /= 100;
-
+// THIS IS STORMS ON DRUGS ALGORITHM!!!
     let targetPressure = 1010-25*log((lnd||SST<25)?1:map(SST,25,30,1,2))/log(1.17);
     targetPressure = lerp(1010,targetPressure,pow(sys.organization,3));
     sys.pressure = lerp(sys.pressure,targetPressure,(sys.pressure>targetPressure?0.05:0.08)*tropicalness);
     sys.pressure -= random(-3,3.5)*nontropicalness;
+    if(moisture < 0.31 && Math.round(random(1,69)) == 2) sys.pressure += random(2,4);
     if(sys.organization<0.3) sys.pressure += random(-2,2.6)*tropicalness;
     sys.pressure += random(constrain(970-sys.pressure,0,40))*nontropicalness*0.97;
     sys.pressure += 0.51*sys.interaction.shear/(1+map(sys.lowerWarmCore,0,1,4,0));
