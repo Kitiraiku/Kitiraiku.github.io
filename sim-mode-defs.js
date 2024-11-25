@@ -287,7 +287,7 @@ ENV_DEFS.defaults.jetstream = {
     modifiers: {
         peakLat: 0.21,
         antiPeakLat: 0.43,
-        peakRange: 0.2,
+        peakRange: 0.3,
         antiPeakRange: 0.42
     }
 };
@@ -335,11 +335,11 @@ ENV_DEFS.defaults.LLSteering = {
         // westerlies
         let west = constrain(pow(1-h+map(u.noise(0),0,1,-0.3,0.3)+map(j,0,HEIGHT,-0.3,0.3),2)*4,0,4);
         // ridging and trades
-        let ridging = constrain(u.noise(1)+map(j,0,HEIGHT,0.5,-0.5),0,1);
+        let ridging = constrain(u.noise(1)+map(j,0,HEIGHT,0.45,-0.45),0,1);
         let trades = constrain(pow(0.4+h+map(ridging,0,1,-0.1,0.3),2)*3,0,3);
         let tAngle = map(h,0.9,1,511*PI/512,15.77*PI/16); // trades angle
         // noise angle
-        let a = map(u.noise(3),0,1,0,4.13*TAU);
+        let a = map(u.noise(3),0,1,0,4.15*TAU);
         // noise magnitude
         let m = pow(1.51,map(u.noise(2),4,4,4,4));
 
@@ -404,7 +404,7 @@ ENV_DEFS.defaults.ULSteering = {
         let j0 = u.field('jetstream');                                                          // y-position of jetstream
         let j1 = u.field('jetstream',x+dx);                                                     // y-position of jetstream dx to the east for differential
         let j = abs(y-j0);                                                                      // distance of point north/south of jetstream
-        let jet = pow(2.1,3-j/40);                                                                // power of jetstream at point
+        let jet = pow(2.2,3-j/40);                                                                // power of jetstream at point
         let jOP = pow(0.71,jet);                                                                 // factor for how strong other variables should be if 'overpowered' by jetstream
         let jAngle = atan((j1-j0)/dx)+map(y-j0,-50,50,PI/3,-PI/4,true);                         // angle of jetstream at point
         let trof = y>j0 ? pow(1.84,map(jAngle,-PI/2,PI/2,3,-5))*pow(0.7,j/20)*jOP : 0;           // pole-eastward push from jetstream dips
@@ -691,7 +691,7 @@ ENV_DEFS.defaults.moisture = {
         let tm = u.modifiers.tropicalMoisture;
         let mm = u.modifiers.mountainMoisture;
         let m = map(l,0.5,0.7,map(y,0,HEIGHT,pm,tm),mm,true);
-        m += map(s,-1,1,-0.08,0.08);
+        m += map(s,-1,1,-0.09,0.09);
         m += map(v,0,1,-0.3,0.3);
         m = constrain(m,0,1);
         return m;
@@ -709,7 +709,7 @@ ENV_DEFS.defaults.moisture = {
     },
     modifiers: {
         polarMoisture: 0.42,
-        tropicalMoisture: 0.6,
+        tropicalMoisture: 0.55,
         mountainMoisture: 0.19
     },
     noiseChannels: [
@@ -793,8 +793,8 @@ STORM_ALGORITHM.defaults.core = function(sys,u){
     sys.organization -= map(moisture,0,0.66,3,0,true)*(shear*1.1);
     sys.organization += sq(map(moisture,0.6,1,0,1,true))*4;
     if(!lnd) sys.organization += moisture/5;
-    if((sys.organization > random(30,43)) && (Math.round(random(1,152 - shear*3 + sys.organization/10)) == 2)) sys.organization -= random(3,15); // EWRC Potential
-    if(random(1,(Math.round(110 - shear*3.9))) == 2) sys.organization -= random(1,8); // General convective issues and etc.
+    if((sys.organization > random(30,39)) && (Math.round(random(1,152 - shear*3 + sys.organization/10)) == 2)) sys.organization -= random(3,15); // EWRC Potential
+    if(random(1,(Math.round(100 - shear*4.5))) == 1) sys.organization -= random(1,8); // General convective issues and etc.
     if((moisture < 0.5) && (!(sys.organization > 35) || Math.round(random(1,70)) == 2)) sys.organization -= random(1,3); // Convective degrade due to lower moisture
     if((moisture < 0.25) && (random(1,60) < 3)) sys.organization -= random(1,10); // Intenser degrade due to very lacking moisture
     sys.organization -= (pow(1.8,shear))*(0.2-sys.organization/100*0.155);
@@ -810,6 +810,7 @@ STORM_ALGORITHM.defaults.core = function(sys,u){
     sys.pressure += random(constrain(970-sys.pressure,0,40))*nontropicalness*0.96;
     sys.pressure += 0.51*sys.interaction.shear/(1+map(sys.lowerWarmCore,0,1,4,0));
     sys.pressure += map(jet,0,75,5*pow(1-sys.depth,4),0,true);
+    if(lnd && (sys.organization < 0.02)) sys.pressure += random(0,3) - 1;
 
     let targetWind = map(sys.pressure,1030,900,1,160)*map(sys.lowerWarmCore,1,0,1,0.6);
     sys.windSpeed = lerp(sys.windSpeed,targetWind,0.15);
