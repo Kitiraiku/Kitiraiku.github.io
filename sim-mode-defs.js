@@ -811,7 +811,7 @@ STORM_ALGORITHM.defaults.core = function(sys,u){
     sys.pressure += random(constrain(970-sys.pressure,0,40))*nontropicalness*0.96;
     sys.pressure += 0.51*sys.interaction.shear/(1+map(sys.lowerWarmCore,0,1,4,0));
     sys.pressure += map(jet,0,75,5*pow(1-sys.depth,4),0,true);
-    if(lnd && (sys.organization < 0.02)) sys.pressure += random(0,3) - 1;
+    if(lnd && (sys.organization < 0.02)) sys.pressure += (random(0,3) - 1) / 3;
 
     let targetWind = map(sys.pressure,1030,900,1,160)*map(sys.lowerWarmCore,1,0,1,0.6);
     sys.windSpeed = lerp(sys.windSpeed,targetWind,0.15);
