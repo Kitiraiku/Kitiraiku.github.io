@@ -788,17 +788,17 @@ STORM_ALGORITHM.defaults.core = function(sys,u){
     sys.organization *= 100;
     if(!lnd) sys.organization += sq(map(SST,19,31,0,1,true))*(2.27+(constrain(log(moisture),-0.55,0)))*tropicalness*1.64;
     if(!lnd && sys.organization < 40) sys.organization += lerp(0,3,nontropicalness);
-    sys.organization -= pow(2,4-((HEIGHT-sys.basin.hemY(sys.pos.y))/(HEIGHT*0.01)));
+    sys.organization -= pow(1.2,4-((HEIGHT-sys.basin.hemY(sys.pos.y))/(HEIGHT*0.01)));
     sys.organization -= (pow(map(sys.depth,0,1,1.17,1.31),shear)-1)*map(sys.depth,0,1,4.7,1.2);
     sys.organization -= map(moisture,0,0.66,3,0,true)*(shear*1.1);
-    sys.organization += sq(map(moisture,0.6,1,0,1,true))*4.35;
-    if(!lnd) sys.organization += moisture/5.29;
+    sys.organization += sq(map(moisture,0.6,1,0,1,true))*4;
+    if(!lnd) sys.organization += moisture/5;
     if(sys.organization > random(30,43) && Math.round(random(1,152 - shear*3 + sys.organization/10)) == 2) sys.organization -= random(3,15); // EWRC Potential
-    if(Math.round(random(1,110 - shear*3.6)) == 2) sys.organization -= random(1.1,8); // General convective issues and etc.
-    if(moisture < 0.5 && (!(sys.organization > 35) || Math.round(random(1,70)) == 2) && Math.round(random(1,64)) == 2) sys.organization -= random(1,3); // Convective degrade due to lower moisture
-    if(moisture < 0.27 && Math.round(random(1,60)) == 2) sys.organization -= random(1.5,8.1); // Intenser degrade due to much lacking moisture
+    if(random(1,(Math.round(110 - shear*3.9)) == 2) sys.organization -= random(1,8); // General convective issues and etc.
+    if(moisture < 0.5 && (!(sys.organization > 35) || Math.round(random(1,70)) == 2)) sys.organization -= random(1,3); // Convective degrade due to lower moisture
+    if(moisture < 0.25 && Math.round(random(1,60)) < 3) sys.organization -= random(1,10); // Intenser degrade due to much lacking moisture
     sys.organization -= (pow(1.8,shear))*(0.2-sys.organization/100*0.155);
-    sys.organization -= pow(1.3,20-SST)*tropicalness*0.89;
+    sys.organization -= pow(1.2,20-SST)*tropicalness*0.93;
     sys.organization = constrain(sys.organization,0,100);
     sys.organization /= 100;
 
