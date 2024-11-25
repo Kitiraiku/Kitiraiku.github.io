@@ -2,7 +2,7 @@ versionLink = document.getElementById("version");
 
 Version = {};
 
-Version.number = "0.0";
+Version.number = "0.5.0a";
 Version.prefix = "v";
 
 function versionLinkUpdate(){
