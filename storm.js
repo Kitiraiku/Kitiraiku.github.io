@@ -1264,6 +1264,7 @@ class ActiveSystem extends StormData{
                 let activeData = decodeB36StringArray(parts[1]);
                 if(algorithmVersion < STORM_ALGORITHM[this.basin.actMode].version && STORM_ALGORITHM[this.basin.actMode].upgrade){
                     let obj = {};
+                    obj.broadening = activeData.pop();
                     obj.depth = activeData.pop();
                     obj.upperWarmCore = activeData.pop();
                     obj.lowerWarmCore = activeData.pop();
@@ -1271,6 +1272,7 @@ class ActiveSystem extends StormData{
                     // upgrade active attributes in case of an algorithm version change
                     STORM_ALGORITHM[this.basin.actMode].upgrade(this,obj,algorithmVersion);
                 }else{
+                    this.broadening = activeData.pop();
                     this.depth = activeData.pop();
                     this.upperWarmCore = activeData.pop();
                     this.lowerWarmCore = activeData.pop();
