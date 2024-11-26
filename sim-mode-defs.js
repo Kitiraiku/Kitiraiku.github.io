@@ -792,7 +792,7 @@ STORM_ALGORITHM.defaults.core = function(sys,u){
     let nontropicalness = constrain(map(sys.lowerWarmCore,0.75,0,0,1),0,0.8);
     // Semi-Realistic Mode
     sys.organization *= 100;
-    if(!lnd) sys.organization += sq(map(SST,10,29.4,0,1,true))*(2.27+(constrain(log(moisture),-0.55,0)))*tropicalness*1.68;
+    if(!lnd) sys.organization += sq(map(SST,10,29.2,0,1,true))*(2.27+(constrain(log(moisture),-0.55,0)))*tropicalness*1.665;
     if(!lnd && sys.organization < 40) sys.organization += lerp(0,3,nontropicalness);
 
     if(((sys.organization < 0.56) && (random(0,175) == 0)) ||
@@ -803,7 +803,7 @@ STORM_ALGORITHM.defaults.core = function(sys,u){
     
     sys.organization -= pow(1.16,4-((HEIGHT-sys.basin.hemY(sys.pos.y))/(HEIGHT*0.01)));
     sys.organization -= (pow(map(sys.depth,0,1,1.17,1.31),shear)-1)*map(sys.depth,0,1,4.6,1.2);
-    sys.organization -= map(moisture,0,0.66,3,0,true)*(shear*1.1);
+    sys.organization -= map(moisture,0,0.66,3,0,true)*(shear*1.15);
     sys.organization += sq(map(moisture,0.6,1,0,1,true))*4;
     if(!lnd) sys.organization += moisture/2.45;
     if(random(1,(Math.round(70 - shear*5))) == 1) sys.organization -= random(1,12); // General convective issues and etc.
@@ -823,7 +823,7 @@ STORM_ALGORITHM.defaults.core = function(sys,u){
     if(moisture > 0.74) sys.pressure -= (random(0,1) / 6) * (nontropicalness / 2.25 + 1); // Non-SST related instabilty from mositure and extratropicalness
     if((sys.pressure < random(960,990)) && (random(0,560) == 0)) sys.broadening = true; // EWRC
     if(sys.organization > 0.99) sys.pressure += (pow(1.4,1 + SST/9.5) - 1) / 2.2; // SST Impact Nerf
-    if(random(1,(Math.round(95 - shear))) == 1) sys.pressure += random(1,3) / 2; // Convective Mishaps, amplified by shear
+    if(random(1,(Math.round(95 - shear*1.2))) == 1) sys.pressure += random(1,3) / 2; // Convective Mishaps, amplified by shear
     if(sys.organization < 0.3) sys.pressure += random(-2,2.6)*tropicalness;
     sys.pressure += random(constrain(970-sys.pressure,0,40))*nontropicalness*0.95;
     sys.pressure += 0.51*sys.interaction.shear/(1+map(sys.lowerWarmCore,0,1,4,0));
@@ -833,7 +833,7 @@ STORM_ALGORITHM.defaults.core = function(sys,u){
 
     let targetWind = map(sys.pressure,1030,900,1,160)*map(sys.lowerWarmCore,1,0,1,0.6);
     sys.windSpeed = lerp(sys.windSpeed,targetWind,0.15);
-    if(sys.broadening) sys.windSpeed -= random(0,2) / 2.25;
+    if(sys.broadening) sys.windSpeed -= random(0,2) / 2.15;
     
     if((random(0,50) == 50) && (moisture > 0.69) && ((SST > 25.9) && (sys.organization < 1))) sys.broadening = false;
     if((random(0,500) == 50) && (moisture > 0.69)) sys.broadening = false;
