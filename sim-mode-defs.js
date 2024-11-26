@@ -826,7 +826,7 @@ STORM_ALGORITHM.defaults.core = function(sys,u){
     if((sys.pressure < random(960,990)) && (random(0,560) == 0)) sys.broadening = true; // EWRC
     if(sys.organization > 0.99) sys.pressure += (pow(1.4,1 + SST/9.5) - 1) / 2.2; // SST Impact Nerf
     if(random(1,(Math.round(95 - shear*1.2))) == 1) sys.pressure += random(1,3) / 2; // Convective Mishaps, amplified by shear
-    if((tropicalness > nontropicalness) && (sys.pressure < 1000) && (random(1,Math.round(1234-shear*10)) == 0)) = sys.pressure += random(6,23); // Disastrous Mishap
+    if((tropicalness > nontropicalness) && (sys.pressure < 1000) && (random(1,Math.round(1234-shear*10)) == 0)) sys.pressure += random(6,23); // Disastrous Mishap
     if(sys.organization < 0.3) sys.pressure += random(-2,2.6)*tropicalness;
     sys.pressure += random(constrain(970-sys.pressure,0,40))*nontropicalness*0.95;
     sys.pressure += 0.51*sys.interaction.shear/(1+map(sys.lowerWarmCore,0,1,4,0));
