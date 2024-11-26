@@ -291,9 +291,9 @@ ENV_DEFS.defaults.jetstream = {
         [4,0.5,150,300,1,2]
     ],
     modifiers: {
-        peakLat: 0.35,
-        antiPeakLat: 0.5,
-        peakRange: 0.43,
+        peakLat: 0.39,
+        antiPeakLat: 0.547,
+        peakRange: 0.45,
         antiPeakRange: 0.51
     }
 };
@@ -414,14 +414,14 @@ ENV_DEFS.defaults.ULSteering = {
         let jOP = pow(0.7,jet);                                                                 // factor for how strong other variables should be if 'overpowered' by jetstream
         let jAngle = atan((j1-j0)/dx)+map(y-j0,-50,50,PI/3,-PI/4,true);                         // angle of jetstream at point
         let trof = y>j0 ? pow(1.75,map(jAngle,-PI/2,PI/2,3,-5))*pow(0.7,j/20)*jOP : 0;           // pole-eastward push from jetstream dips
-        let tAngle = -PI/14;                                                                    // angle of push from jetstream dips
-        let ridging = 0.45-j0/HEIGHT-map(sqrt(map(s,-1,1,0,1)),0,1,0.16,0);                     // how much 'ridge' or 'trough' there is from jetstream
+        let tAngle = -PI/13.5;                                                                    // angle of push from jetstream dips
+        let ridging = 0.445-j0/HEIGHT-map(sqrt(map(s,-1,1,0,1)),0,1,0.16,0);                     // how much 'ridge' or 'trough' there is from jetstream
         // power of winds equatorward of jetstream
         let hadley = (map(ridging,-0.3,0.25,u.modifiers.hadleyUpperBound,1.5,true)+map(m,0,1,-1.5,1.5))*jOP*(y>j0?1:0)*1.08;
         // angle of winds equatorward of jetstream
-        let hAngle = map(ridging,-0.3,0.235,-PI/15,-15*PI/16,true);
+        let hAngle = map(ridging,-0.3,0.235,-PI/15,-15.1*PI/16,true);
         let ferrel = 2*jOP*(y<j0?1:0);                                                          // power of winds poleward of jetstream
-        let fAngle = 4.365*PI/8;                                                                    // angle of winds poleward of jetstream
+        let fAngle = 4.367*PI/8;                                                                    // angle of winds poleward of jetstream
 
         let a = map(u.noise(0),0,1,0,5*TAU);                                                    // noise angle
         m = pow(1.55,map(m,0,1,-8,4))*jOP;                                                       // noise magnitude
@@ -650,7 +650,7 @@ ENV_DEFS.defaults.SST = {
     oceanic: true,
     modifiers: {
         offSeasonPolarTemp: 4.5,
-        peakSeasonPolarTemp: 13,
+        peakSeasonPolarTemp: 12.5,
         offSeasonTropicsTemp: 25.1,
         peakSeasonTropicsTemp: 28.1
     }
@@ -715,7 +715,7 @@ ENV_DEFS.defaults.moisture = {
     },
     modifiers: {
         polarMoisture: 0.47,
-        tropicalMoisture: 0.58,
+        tropicalMoisture: 0.56,
         mountainMoisture: 0.19
     },
     noiseChannels: [
@@ -794,7 +794,7 @@ STORM_ALGORITHM.defaults.core = function(sys,u){
     // Semi-Realistic Mode:
     
     sys.organization *= 100;
-    if(!lnd) sys.organization += sq(map(SST,10,29,0,1,true))*(2.27+(constrain(log(moisture),-0.55,0)))*tropicalness*1.6;
+    if(!lnd) sys.organization += sq(map(SST,10,29,0,1,true))*(2.27+(constrain(log(moisture),-0.55,0)))*tropicalness*1.55;
     if(!lnd && sys.organization < 40) sys.organization += lerp(0,3,nontropicalness);
 
     if(((sys.organization < 0.56) && (random(0,175) == 0)) ||
@@ -822,9 +822,9 @@ STORM_ALGORITHM.defaults.core = function(sys,u){
     sys.pressure = lerp(sys.pressure,targetPressure,(sys.pressure>targetPressure?0.05:0.08)*tropicalness);
     sys.pressure -= random(-3,3.5)*nontropicalness;
     // Additional Factors:
-    if(moisture > 0.74) sys.pressure -= (random(0,1) / 7) * (nontropicalness / 3 + 1); // Non-SST related instabilty from mositure and extratropicalness
+    if(moisture > 0.67) sys.pressure -= (random(0,1) / 5) * (nontropicalness / 3 + 1); // Non-SST related instabilty from mositure and extratropicalness
     if((sys.pressure < random(960,990)) && (random(0,560) == 0)) sys.broadening = true; // EWRC
-    if(sys.organization > 0.99) sys.pressure += (pow(1.4,1 + SST/9.5) - 1) / 2.2; // SST Impact Nerf
+    if(sys.organization > 0.95) sys.pressure += (pow(1.4,1 + SST/9.5) - 1) / 2; // SST Impact Nerf
     if(random(1,(Math.round(95 - shear*1.2))) == 1) sys.pressure += random(1,3) / 2; // Convective Mishaps, amplified by shear
     if((tropicalness > nontropicalness) && (sys.pressure < 1000) && (random(1,Math.round(1234-shear*10)) == 0)) sys.pressure += random(6,23); // Disastrous Mishap
     if(sys.organization < 0.3) sys.pressure += random(-2,2.6)*tropicalness;
