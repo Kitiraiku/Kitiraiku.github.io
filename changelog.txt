@@ -9,12 +9,14 @@ Semi-Realistic Mode:
 
 v0.5
 
+Semi-Realistic Mode:
 + Improving vulnearbility of storms by adding a broadening variable
 + Tweaking Moisture, Jetstream, Upper Level and Lower Level Patterns
 + Tweaking Steering
 
 v0.4.1
 
+Semi-Realistic Mode:
 + Steering Tweaks
 + Minor strengthening of the effects of shear
 + Fixed EX spawns (my "ifJetstreamBound" function had wrong "bracketing")
