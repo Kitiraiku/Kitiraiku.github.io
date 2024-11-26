@@ -292,9 +292,9 @@ ENV_DEFS.defaults.jetstream = {
     ],
     modifiers: {
         peakLat: 0.39,
-        antiPeakLat: 0.547,
-        peakRange: 0.45,
-        antiPeakRange: 0.545
+        antiPeakLat: 0.54,
+        peakRange: 0.41,
+        antiPeakRange: 0.55
     }
 };
 ENV_DEFS[SIM_MODE_NORMAL].jetstream = {};
@@ -341,9 +341,9 @@ ENV_DEFS.defaults.LLSteering = {
         // westerlies
         let west = constrain(pow(1-h+map(u.noise(0),0,1,-0.3,0.3)+map(j,0,HEIGHT,-0.3,0.3),2)*4,0,4);
         // ridging and trades
-        let ridging = constrain(u.noise(1)+map(j,0,HEIGHT,0.443,-0.443),0,1);
+        let ridging = constrain(u.noise(1)+map(j,0,HEIGHT,0.443,-0.443),0,1.1);
         let trades = constrain(pow(0.4+h+map(ridging,0,1,-0.3,0.1),2)*3,0,3);
-        let tAngle = map(h,0.89,1,510*PI/512,15.91*PI/16); // trades angle
+        let tAngle = map(h,0.89,1,510*PI/512,15.92*PI/16); // trades angle
         // noise angle
         let a = map(u.noise(3),0,1,0,4.14*TAU);
         // noise magnitude
@@ -766,7 +766,7 @@ STORM_ALGORITHM.defaults.steering = function(sys,vec,u){
     let ul = u.f("ULSteering");
     let d = sqrt(sys.depth);
     let x = lerp(ll.x,ul.x,d);       // Deeper systems follow upper-level steering more and lower-level steering less
-    let y = lerp(ll.y,ul.y,d);
+    let y = lerp(ll.y,ul.y,d)*0.9;
     vec.set(x,y);
 };
 
@@ -798,7 +798,7 @@ STORM_ALGORITHM.defaults.core = function(sys,u){
     if(!lnd && sys.organization < 40) sys.organization += lerp(0,3,nontropicalness);
 
     if(((sys.organization < 0.56) && (random(0,175) == 0)) ||
-        ((random(0,150) == 0) && (moisture < 0.5)) ||
+        ((random(0,50) == 0) && (moisture < 0.49)) ||
         ((random(0,50) == 0) && (SST < 24.86) && ((moisture < 0.6) || (shear > 21))))        // Early Broadening check
         {sys.broadening = true;}         
     if((moisture < 0.29) && (random(0,85) == 25)) sys.broadening = true;     // Dry air ingestion
@@ -812,9 +812,10 @@ STORM_ALGORITHM.defaults.core = function(sys,u){
     if(((moisture < 0.48) && (sys.organization < 61)) && (Math.round(random(1,27)) == 2)) sys.organization -= random(1,4); // Convective degrade due to lower moisture
     if((moisture < 0.38) && (random(1,60) < 3)) sys.organization -= random(2,4); // Intenser degrade due to very lacking moisture
     if(sys.broadening && (sys.organization < 0.93)) sys.organization -= random(0,1) / 2; // Broad boy
-    sys.organization -= (pow(1.8,shear))*(0.2-sys.organization/100);
+    sys.organization -= (pow(1.8,shear*1.1))*(0.2-sys.organization/100);
     sys.organization -= pow(1.2,20-SST)*tropicalness*0.93;
-    sys.organization = constrain(sys.organization,0,100);
+    if(sys.broadening) sys.organization -= (random(1,3) - 0.9) / 2;
+    sys.organization = constrain(sys.organization,0,100); 
     sys.organization /= 100;
 
     let targetPressure = 1010-25*log((lnd||SST<24.7)?1:map(SST,24.7,30,1,2))/log(1.16);
@@ -828,11 +829,11 @@ STORM_ALGORITHM.defaults.core = function(sys,u){
     if(random(1,(Math.round(80 - pow(shear,1.8)))) == 1) sys.pressure += random(1,3) / 2; // Convective Mishaps, amplified by shear
     if((tropicalness > nontropicalness) && (sys.pressure < 1000) && (random(1,Math.round(600-pow(shear*1.3,2))) == 0)) sys.pressure += random(6,23); // Disastrous Mishap
     if(sys.organization < 0.3) sys.pressure += random(-2,2.6)*tropicalness;
-    sys.pressure += random(constrain(970-sys.pressure,0,40))*nontropicalness*0.95;
+    sys.pressure += random(constrain(970-sys.pressure,0,40))*nontropicalness*0.96;
     sys.pressure += 0.51*sys.interaction.shear/(1+map(sys.lowerWarmCore,0,1,4,0));
     sys.pressure += map(jet,0,75,5*pow(1-sys.depth,4),0,true);
     if(lnd && (sys.organization < 0.7) && (tropicalness > nontropicalness)) sys.pressure += (random(0,3) - 1) / 1.25; // Land interaction
-    if(sys.broadening) sys.pressure += (random(0,2) - 0.9) / 2; // Filling in
+    if(sys.broadening && (sys.pressure < 1003)) sys.pressure += (random(0,2) - 0.9) / 2; // Filling in
 
     let targetWind = map(sys.pressure,1030,900,1,160)*map(sys.lowerWarmCore,1,0,1,0.6);
     sys.windSpeed = lerp(sys.windSpeed,targetWind,0.15);
