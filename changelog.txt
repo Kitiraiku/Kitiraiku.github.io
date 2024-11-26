@@ -3,6 +3,7 @@ Based on and off Cyclone Sim v0.3.6 (2020-12-26) by MonsoonJr99, all credits go 
 
 v0.6
 
+Semi-Realistic Mode:
 + Further improved impacts on systems from adverse factors, storms should feel more realistic strength-wise
 + Slighty tweaked the air currents
 
