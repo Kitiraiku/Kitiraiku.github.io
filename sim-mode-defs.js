@@ -415,7 +415,7 @@ ENV_DEFS.defaults.ULSteering = {
         let jAngle = atan((j1-j0)/dx)+map(y-j0,-50,50,PI/3,-PI/4,true);                         // angle of jetstream at point
         let trof = y>j0 ? pow(1.75,map(jAngle,-PI/2,PI/2,3,-5))*pow(0.7,j/20)*jOP : 0;           // pole-eastward push from jetstream dips
         let tAngle = -PI/13.5;                                                                    // angle of push from jetstream dips
-        let ridging = 0.445-j0/HEIGHT-map(sqrt(map(s,-1,1,0,1)),0,1,0.16,0);                     // how much 'ridge' or 'trough' there is from jetstream
+        let ridging = 0.5-j0/HEIGHT-map(sqrt(map(s,-1,1,0,1)),0,1,0.16,0);                     // how much 'ridge' or 'trough' there is from jetstream
         // power of winds equatorward of jetstream
         let hadley = (map(ridging,-0.3,0.25,u.modifiers.hadleyUpperBound,1.5,true)+map(m,0,1,-1.5,1.5))*jOP*(y>j0?1:0)*1.08;
         // angle of winds equatorward of jetstream
@@ -805,11 +805,11 @@ STORM_ALGORITHM.defaults.core = function(sys,u){
     
     sys.organization -= pow(1.16,4-((HEIGHT-sys.basin.hemY(sys.pos.y))/(HEIGHT*0.01)));
     sys.organization -= (pow(map(sys.depth,0,1,1.17,1.31),shear*1.1)-1)*map(sys.depth,0,1,4.6,1.2);
-    sys.organization -= map(moisture,0,0.66,3,0,true)*(shear*1.25);
+    sys.organization -= map(moisture,0,0.66,3,0,true)*(shear*1.2);
     sys.organization += sq(map(moisture,0.6,1,0,1,true))*4;
-    if(!lnd) sys.organization += moisture / 3.34;
-    if(random(1,(Math.round(70 - shear*5))) == 1) sys.organization -= random(1,12); // General convective issues and etc.
-    if(((moisture < 0.5) && (sys.organization < 61)) && (Math.round(random(1,27)) == 2)) sys.organization -= random(1,4); // Convective degrade due to lower moisture
+    if(!lnd) sys.organization += moisture / 3;
+    if(random(1,(Math.round(70 - pow(shear,2)))) == 1) sys.organization -= random(1,12); // General convective issues and etc.
+    if(((moisture < 0.48) && (sys.organization < 61)) && (Math.round(random(1,27)) == 2)) sys.organization -= random(1,4); // Convective degrade due to lower moisture
     if((moisture < 0.38) && (random(1,60) < 3)) sys.organization -= random(2,4); // Intenser degrade due to very lacking moisture
     if(sys.broadening && (sys.organization < 0.93)) sys.organization -= random(0,1) / 2; // Broad boy
     sys.organization -= (pow(1.8,shear))*(0.2-sys.organization/100);
@@ -825,21 +825,22 @@ STORM_ALGORITHM.defaults.core = function(sys,u){
     if(moisture > 0.67) sys.pressure -= (random(0,1) / 5) * (nontropicalness / 3 + 1); // Non-SST related instabilty from mositure and extratropicalness
     if((sys.pressure < random(960,990)) && (random(0,60) == 0)) sys.broadening = true; // EWRC
     if(sys.organization > 0.95) sys.pressure += (pow(1.4,1 + SST/9.5) - 1) / 2; // SST Impact Nerf
-    if(random(1,(Math.round(80 - shear*1.5))) == 1) sys.pressure += random(1,3) / 2; // Convective Mishaps, amplified by shear
-    if((tropicalness > nontropicalness) && (sys.pressure < 1000) && (random(1,Math.round(600-shear*8.5)) == 0)) sys.pressure += random(6,23); // Disastrous Mishap
+    if(random(1,(Math.round(80 - pow(shear,1.8)))) == 1) sys.pressure += random(1,3) / 2; // Convective Mishaps, amplified by shear
+    if((tropicalness > nontropicalness) && (sys.pressure < 1000) && (random(1,Math.round(600-pow(shear*1.3,2))) == 0)) sys.pressure += random(6,23); // Disastrous Mishap
     if(sys.organization < 0.3) sys.pressure += random(-2,2.6)*tropicalness;
     sys.pressure += random(constrain(970-sys.pressure,0,40))*nontropicalness*0.95;
     sys.pressure += 0.51*sys.interaction.shear/(1+map(sys.lowerWarmCore,0,1,4,0));
     sys.pressure += map(jet,0,75,5*pow(1-sys.depth,4),0,true);
     if(lnd && (sys.organization < 0.7) && (tropicalness > nontropicalness)) sys.pressure += (random(0,3) - 1) / 1.25; // Land interaction
-    if(sys.broadening) sys.pressure += (random(0,2) - 0.9) / 1.5; // Filling in
+    if(sys.broadening) sys.pressure += (random(0,2) - 0.9) / 2; // Filling in
 
     let targetWind = map(sys.pressure,1030,900,1,160)*map(sys.lowerWarmCore,1,0,1,0.6);
     sys.windSpeed = lerp(sys.windSpeed,targetWind,0.15);
     if(sys.broadening) sys.windSpeed -= random(0,2) / 2.15;
     
     if((random(0,50) == 50) && (moisture > 0.69) && ((SST > 25.9) && (sys.organization < 1))) sys.broadening = false;
-    if((random(0,500) == 50) && (moisture > 0.69)) sys.broadening = false;
+    if((random(0,95) == 50) && (moisture > 0.69)) sys.broadening = false;
+    if((sys.pressure < random(940,970)) && (random(0,29) == 0)) sys.broadening = false;
     
     let targetDepth = map(
         sys.upperWarmCore,
