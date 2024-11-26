@@ -790,9 +790,11 @@ STORM_ALGORITHM.defaults.core = function(sys,u){
     sys.upperWarmCore = constrain(sys.upperWarmCore,0,1);
     let tropicalness = constrain(map(sys.lowerWarmCore,0.5,1,0,1),0,sys.upperWarmCore);
     let nontropicalness = constrain(map(sys.lowerWarmCore,0.75,0,0,1),0,0.8);
-    // Semi-Realistic Mode
+    
+    // Semi-Realistic Mode:
+    
     sys.organization *= 100;
-    if(!lnd) sys.organization += sq(map(SST,10,29.2,0,1,true))*(2.27+(constrain(log(moisture),-0.55,0)))*tropicalness*1.665;
+    if(!lnd) sys.organization += sq(map(SST,10,29,0,1,true))*(2.27+(constrain(log(moisture),-0.55,0)))*tropicalness*1.6;
     if(!lnd && sys.organization < 40) sys.organization += lerp(0,3,nontropicalness);
 
     if(((sys.organization < 0.56) && (random(0,175) == 0)) ||
@@ -802,10 +804,10 @@ STORM_ALGORITHM.defaults.core = function(sys,u){
     if((moisture < 0.29) && (random(0,85) == 25)) sys.broadening = true;     // Dry air ingestion
     
     sys.organization -= pow(1.16,4-((HEIGHT-sys.basin.hemY(sys.pos.y))/(HEIGHT*0.01)));
-    sys.organization -= (pow(map(sys.depth,0,1,1.17,1.31),shear)-1)*map(sys.depth,0,1,4.6,1.2);
-    sys.organization -= map(moisture,0,0.66,3,0,true)*(shear*1.2);
+    sys.organization -= (pow(map(sys.depth,0,1,1.17,1.31),shear*1.1)-1)*map(sys.depth,0,1,4.6,1.2);
+    sys.organization -= map(moisture,0,0.66,3,0,true)*(shear*1.25);
     sys.organization += sq(map(moisture,0.6,1,0,1,true))*4;
-    if(!lnd) sys.organization += moisture / 3.1;
+    if(!lnd) sys.organization += moisture / 3.25;
     if(random(1,(Math.round(70 - shear*5))) == 1) sys.organization -= random(1,12); // General convective issues and etc.
     if((moisture < 0.5) && (sys.organization < 61) || (Math.round(random(1,70)) == 2)) sys.organization -= random(1,3); // Convective degrade due to lower moisture
     if((moisture < 0.38) && (random(1,60) < 3)) sys.organization -= random(2,4); // Intenser degrade due to very lacking moisture
@@ -824,6 +826,7 @@ STORM_ALGORITHM.defaults.core = function(sys,u){
     if((sys.pressure < random(960,990)) && (random(0,560) == 0)) sys.broadening = true; // EWRC
     if(sys.organization > 0.99) sys.pressure += (pow(1.4,1 + SST/9.5) - 1) / 2.2; // SST Impact Nerf
     if(random(1,(Math.round(95 - shear*1.2))) == 1) sys.pressure += random(1,3) / 2; // Convective Mishaps, amplified by shear
+    if((tropicalness > nontropicalness) && (sys.pressure < 1000) && (random(1,Math.round(1234-shear*10)) == 0)) = sys.pressure += random(6,23); // Disastrous Mishap
     if(sys.organization < 0.3) sys.pressure += random(-2,2.6)*tropicalness;
     sys.pressure += random(constrain(970-sys.pressure,0,40))*nontropicalness*0.95;
     sys.pressure += 0.51*sys.interaction.shear/(1+map(sys.lowerWarmCore,0,1,4,0));
