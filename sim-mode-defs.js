@@ -175,8 +175,8 @@ SPAWN_RULES.defaults.archetypes = {
 
 SPAWN_RULES.defaults.doSpawn = function(b){
     // tropical waves
-    if(random()<0.00871*sq((seasonalSine(b.tick)+1.005)/2)) b.spawnArchetype('tw');
-    if(Math.round(random(1, 510)) == 1) b.spawnArchetype('tw');
+    if(random()<0.009*sq((seasonalSine(b.tick)+1.005)/2)) b.spawnArchetype('tw');
+    if(Math.round(random(1, 400)) == 1) b.spawnArchetype('tw');
 
     // extratropical cyclones
     if(random()<0.01-0.002*seasonalSine(b.tick)) b.spawnArchetype('ex');
@@ -291,10 +291,10 @@ ENV_DEFS.defaults.jetstream = {
         [4,0.5,150,300,1,2]
     ],
     modifiers: {
-        peakLat: 0.39,
-        antiPeakLat: 0.54,
-        peakRange: 0.41,
-        antiPeakRange: 0.55
+        peakLat: 0.4,
+        antiPeakLat: 0.6,
+        peakRange: 0.35,
+        antiPeakRange: 0.56
     }
 };
 ENV_DEFS[SIM_MODE_NORMAL].jetstream = {};
@@ -342,7 +342,7 @@ ENV_DEFS.defaults.LLSteering = {
         let west = constrain(pow(1-h+map(u.noise(0),0,1,-0.3,0.3)+map(j,0,HEIGHT,-0.3,0.3),2)*4,0,4);
         // ridging and trades
         let ridging = constrain(u.noise(1)+map(j,0,HEIGHT,0.443,-0.443),0,1.1);
-        let trades = constrain(pow(0.4+h+map(ridging,0,1,-0.3,0.1),2)*3,0,3);
+        let trades = constrain(pow(0.4+h+map(ridging,0,1,-0.3,0.1),2)*3,0,3.1);
         let tAngle = map(h,0.89,1,510*PI/512,15.92*PI/16); // trades angle
         // noise angle
         let a = map(u.noise(3),0,1,0,4.14*TAU);
@@ -806,15 +806,15 @@ STORM_ALGORITHM.defaults.core = function(sys,u){
     sys.organization -= pow(1.16,4-((HEIGHT-sys.basin.hemY(sys.pos.y))/(HEIGHT*0.01)));
     sys.organization -= (pow(map(sys.depth,0,1,1.17,1.31),shear*1.1)-1)*map(sys.depth,0,1,4.6,1.2);
     sys.organization -= map(moisture,0,0.66,3,0,true)*(shear*1.2);
-    sys.organization += sq(map(moisture,0.6,1,0,1,true))*4;
-    if(!lnd) sys.organization += moisture / 3;
+    sys.organization += sq(map(moisture,0.6,1,0,1,true))*4.1;
+    if(!lnd) sys.organization += moisture / 2.5;
     if(random(1,(Math.round(70 - pow(shear,2)))) == 1) sys.organization -= random(1,12); // General convective issues and etc.
     if(((moisture < 0.48) && (sys.organization < 61)) && (Math.round(random(1,27)) == 2)) sys.organization -= random(1,4); // Convective degrade due to lower moisture
     if((moisture < 0.38) && (random(1,60) < 3)) sys.organization -= random(2,4); // Intenser degrade due to very lacking moisture
     if(sys.broadening && (sys.organization < 0.93)) sys.organization -= random(0,1) / 2; // Broad boy
     sys.organization -= (pow(1.8,shear*1.1))*(0.2-sys.organization/100);
     sys.organization -= pow(1.2,20-SST)*tropicalness*0.93;
-    if(sys.broadening) sys.organization -= (random(1,3) - 0.9) / 2;
+    if(sys.broadening) sys.organization -= random(1,3) / 2.8;
     sys.organization = constrain(sys.organization,0,100); 
     sys.organization /= 100;
 
