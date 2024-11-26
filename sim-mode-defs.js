@@ -175,7 +175,7 @@ SPAWN_RULES.defaults.archetypes = {
 
 SPAWN_RULES.defaults.doSpawn = function(b){
     // tropical waves
-    if(random()<0.00845*sq((seasonalSine(b.tick)+1.01)/2)) b.spawnArchetype('tw');
+    if(random()<0.00871*sq((seasonalSine(b.tick)+1.005)/2)) b.spawnArchetype('tw');
     if(Math.round(random(1, 580)) == 1) b.spawnArchetype('tw');
 
     // extratropical cyclones
