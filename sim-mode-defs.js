@@ -792,14 +792,14 @@ STORM_ALGORITHM.defaults.core = function(sys,u){
     let nontropicalness = constrain(map(sys.lowerWarmCore,0.75,0,0,1),0,0.8);
     // Semi-Realistic Mode
     sys.organization *= 100;
-    if(!lnd) sys.organization += sq(map(SST,10,29.4,0,1,true))*(2.27+(constrain(log(moisture),-0.55,0)))*tropicalness*1.67;
+    if(!lnd) sys.organization += sq(map(SST,10,29.4,0,1,true))*(2.27+(constrain(log(moisture),-0.55,0)))*tropicalness*1.68;
     if(!lnd && sys.organization < 40) sys.organization += lerp(0,3,nontropicalness);
 
-    if(((sys.organization < 0.56) && (random(0,200) == 0)) ||
-        ((random(0,158) == 0) && (moisture < 0.5)) ||
-        ((random(0,111) == 0) && (SST < 25) && (moisture < 0.6)))        // Early Broadening check
+    if(((sys.organization < 0.56) && (random(0,175) == 0)) ||
+        ((random(0,150) == 0) && (moisture < 0.5)) ||
+        ((random(0,50) == 0) && (SST < 24.86) && ((moisture < 0.6) || (shear > 21))))        // Early Broadening check
         {sys.broadening = true;}         
-    if((moisture < 0.25) && (random(0,100) == 25)) sys.broadening = true;     // Dry air ingestion
+    if((moisture < 0.29) && (random(0,85) == 25)) sys.broadening = true;     // Dry air ingestion
     
     sys.organization -= pow(1.16,4-((HEIGHT-sys.basin.hemY(sys.pos.y))/(HEIGHT*0.01)));
     sys.organization -= (pow(map(sys.depth,0,1,1.17,1.31),shear)-1)*map(sys.depth,0,1,4.6,1.2);
@@ -824,11 +824,11 @@ STORM_ALGORITHM.defaults.core = function(sys,u){
     if(sys.organization > 0.99) sys.pressure += (pow(1.4,1 + SST/9.5) - 1) / 2.25; // SST Impact Nerf
     if(random(1,(Math.round(95 - shear))) == 1) sys.pressure += random(1,3) / 2; // Convective Mishaps, amplified by shear
     if(sys.organization < 0.3) sys.pressure += random(-2,2.6)*tropicalness;
-    sys.pressure += random(constrain(970-sys.pressure,0,40))*nontropicalness*0.96;
+    sys.pressure += random(constrain(970-sys.pressure,0,40))*nontropicalness*0.95;
     sys.pressure += 0.51*sys.interaction.shear/(1+map(sys.lowerWarmCore,0,1,4,0));
     sys.pressure += map(jet,0,75,5*pow(1-sys.depth,4),0,true);
     if(lnd && (sys.organization < 0.7) && (tropicalness > nontropicalness)) sys.pressure += (random(0,3) - 1) / 1.25; // Land interaction
-    if(sys.broadening) sys.pressure += (random(0,2) - 1) / 2; // Filling in
+    if(sys.broadening) sys.pressure += (random(0,2) - 1) / 1.75; // Filling in
 
     let targetWind = map(sys.pressure,1030,900,1,160)*map(sys.lowerWarmCore,1,0,1,0.6);
     sys.windSpeed = lerp(sys.windSpeed,targetWind,0.15);
@@ -924,10 +924,10 @@ STORM_ALGORITHM[SIM_MODE_EXPERIMENTAL].core = function(sys,u){
 STORM_ALGORITHM.defaults.typeDetermination = function(sys,u){
     switch(sys.type){
         case TROP:
-            sys.type = sys.lowerWarmCore<0.55 ? EXTROP : ((sys.organization<0.4 && sys.windSpeed<50) || sys.windSpeed<20) ? sys.upperWarmCore<0.56 ? EXTROP : TROPWAVE : sys.upperWarmCore<0.56 ? SUBTROP : TROP;
+            sys.type = sys.lowerWarmCore<0.55 ? EXTROP : ((sys.organization<0.4 && sys.windSpeed<50) || sys.windSpeed<20) ? sys.upperWarmCore<0.56 ? EXTROP : TROPWAVE : sys.upperWarmCore<0.58 ? SUBTROP : TROP;
             break;
         case SUBTROP:
-            sys.type = sys.lowerWarmCore<0.55 ? EXTROP : ((sys.organization<0.39 && sys.windSpeed<56) || sys.windSpeed<20) ? sys.upperWarmCore<0.57 ? EXTROP : TROPWAVE : sys.upperWarmCore<0.57 ? SUBTROP : TROP;
+            sys.type = sys.lowerWarmCore<0.55 ? EXTROP : ((sys.organization<0.39 && sys.windSpeed<56) || sys.windSpeed<20) ? sys.upperWarmCore<0.57 ? EXTROP : TROPWAVE : sys.upperWarmCore<0.59 ? SUBTROP : TROP;
             break;
         case TROPWAVE:
             sys.type = sys.lowerWarmCore<0.55 ? EXTROP : (sys.organization<0.45 || sys.windSpeed<25) ? sys.upperWarmCore<0.56 ? EXTROP : TROPWAVE : sys.upperWarmCore<0.56 ? SUBTROP : TROP;
