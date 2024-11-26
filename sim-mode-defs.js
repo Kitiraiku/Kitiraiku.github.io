@@ -288,13 +288,13 @@ ENV_DEFS.defaults.jetstream = {
     },
     invisible: true,
     noiseChannels: [
-        [4,0.5,160,300,1,2]
+        [4,0.5,150,300,1,2]
     ],
     modifiers: {
-        peakLat: 0.32,
+        peakLat: 0.35,
         antiPeakLat: 0.55,
-        peakRange: 0.35,
-        antiPeakRange: 0.51
+        peakRange: 0.4,
+        antiPeakRange: 0.57
     }
 };
 ENV_DEFS[SIM_MODE_NORMAL].jetstream = {};
@@ -347,7 +347,7 @@ ENV_DEFS.defaults.LLSteering = {
         // noise angle
         let a = map(u.noise(3),0,1,0,4.14*TAU);
         // noise magnitude
-        let m = pow(1.48,map(u.noise(2),0,1,-6,4));
+        let m = pow(1.471,map(u.noise(2),0,1,-6,4));
 
         // apply to vector
         u.vec.rotate(a);
