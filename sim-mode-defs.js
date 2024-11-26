@@ -176,7 +176,7 @@ SPAWN_RULES.defaults.archetypes = {
 SPAWN_RULES.defaults.doSpawn = function(b){
     // tropical waves
     if(random()<0.00871*sq((seasonalSine(b.tick)+1.005)/2)) b.spawnArchetype('tw');
-    if(Math.round(random(1, 580)) == 1) b.spawnArchetype('tw');
+    if(Math.round(random(1, 510)) == 1) b.spawnArchetype('tw');
 
     // extratropical cyclones
     if(random()<0.01-0.002*seasonalSine(b.tick)) b.spawnArchetype('ex');
@@ -275,7 +275,7 @@ ENV_DEFS[SIM_MODE_EXPERIMENTAL] = {}; // "Experimental" simulation mode
 ENV_DEFS.defaults.jetstream = {
     version: 0,
     mapFunc: (u,x,y,z)=>{
-        let v = u.noise(0,x-z*3,0,z);
+        let v = u.noise(0,x-z*2.9,0,z);
         let peakLat = u.modifiers.peakLat;
         let antiPeakLat = u.modifiers.antiPeakLat;
         let peakRange = u.modifiers.peakRange;
@@ -291,7 +291,7 @@ ENV_DEFS.defaults.jetstream = {
         [4,0.5,150,300,1,2]
     ],
     modifiers: {
-        peakLat: 0.36,
+        peakLat: 0.35,
         antiPeakLat: 0.5,
         peakRange: 0.43,
         antiPeakRange: 0.51
@@ -341,7 +341,7 @@ ENV_DEFS.defaults.LLSteering = {
         // westerlies
         let west = constrain(pow(1-h+map(u.noise(0),0,1,-0.3,0.3)+map(j,0,HEIGHT,-0.3,0.3),2)*4,0,4);
         // ridging and trades
-        let ridging = constrain(u.noise(1)+map(j,0,HEIGHT,0.45,-0.45),0,1);
+        let ridging = constrain(u.noise(1)+map(j,0,HEIGHT,0.44,-0.44),0,1);
         let trades = constrain(pow(0.4+h+map(ridging,0,1,-0.3,0.1),2)*3,0,3);
         let tAngle = map(h,0.89,1,510*PI/512,15.91*PI/16); // trades angle
         // noise angle
@@ -417,7 +417,7 @@ ENV_DEFS.defaults.ULSteering = {
         let tAngle = -PI/14;                                                                    // angle of push from jetstream dips
         let ridging = 0.45-j0/HEIGHT-map(sqrt(map(s,-1,1,0,1)),0,1,0.16,0);                     // how much 'ridge' or 'trough' there is from jetstream
         // power of winds equatorward of jetstream
-        let hadley = (map(ridging,-0.3,0.25,u.modifiers.hadleyUpperBound,1.5,true)+map(m,0,1,-1.5,1.5))*jOP*(y>j0?1:0)*1.06;
+        let hadley = (map(ridging,-0.3,0.25,u.modifiers.hadleyUpperBound,1.5,true)+map(m,0,1,-1.5,1.5))*jOP*(y>j0?1:0)*1.08;
         // angle of winds equatorward of jetstream
         let hAngle = map(ridging,-0.3,0.235,-PI/15,-15*PI/16,true);
         let ferrel = 2*jOP*(y<j0?1:0);                                                          // power of winds poleward of jetstream
@@ -548,7 +548,7 @@ ENV_DEFS.defaults.SSTAnomaly = {
     version: 0,
     mapFunc: (u,x,y,z)=>{
         let v = u.noise(0);
-        v = v*1.93;
+        v = v*1.9;
         let i = v<1 ? -1 : 1;
         v = 1-abs(1-v);
         if(v===0) v = 0.000001;
@@ -650,9 +650,9 @@ ENV_DEFS.defaults.SST = {
     oceanic: true,
     modifiers: {
         offSeasonPolarTemp: 4.5,
-        peakSeasonPolarTemp: 16,
-        offSeasonTropicsTemp: 25.25,
-        peakSeasonTropicsTemp: 28.25
+        peakSeasonPolarTemp: 13,
+        offSeasonTropicsTemp: 25.1,
+        peakSeasonTropicsTemp: 28.1
     }
 };
 ENV_DEFS[SIM_MODE_NORMAL].SST = {};
