@@ -794,7 +794,7 @@ STORM_ALGORITHM.defaults.core = function(sys,u){
     // Semi-Realistic Mode:
     
     sys.organization *= 100;
-    if(!lnd) sys.organization += sq(map(SST,10,29,0,1,true))*(2.27+(constrain(log(moisture),-0.55,0)))*tropicalness*1.55;
+    if(!lnd) sys.organization += 0.9*sq(map(SST,10,29,0,1,true))*(3+(constrain(log(moisture),-0.65,0)))*tropicalness*1.55;
     if(!lnd && sys.organization < 40) sys.organization += lerp(0,3,nontropicalness);
 
     if(((sys.organization < 0.56) && (random(0,175) == 0)) ||
