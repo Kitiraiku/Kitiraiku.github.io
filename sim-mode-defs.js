@@ -415,7 +415,7 @@ ENV_DEFS.defaults.ULSteering = {
         let jAngle = atan((j1-j0)/dx)+map(y-j0,-50,50,PI/3,-PI/4,true);                         // angle of jetstream at point
         let trof = y>j0 ? pow(1.75,map(jAngle,-PI/2,PI/2,3,-5))*pow(0.7,j/20)*jOP : 0;           // pole-eastward push from jetstream dips
         let tAngle = -PI/13.5;                                                                    // angle of push from jetstream dips
-        let ridging = 0.5-j0/HEIGHT-map(sqrt(map(s,-1,1,0,1)),0,1,0.16,0);                     // how much 'ridge' or 'trough' there is from jetstream
+        let ridging = 0.52-j0/HEIGHT-map(sqrt(map(s,-1,1,0,1)),0,1,0.16,0);                     // how much 'ridge' or 'trough' there is from jetstream
         // power of winds equatorward of jetstream
         let hadley = (map(ridging,-0.3,0.25,u.modifiers.hadleyUpperBound,1.5,true)+map(m,0,1,-1.5,1.5))*jOP*(y>j0?1:0)*1.08;
         // angle of winds equatorward of jetstream
@@ -690,7 +690,7 @@ ENV_DEFS.defaults.moisture = {
     version: 0,
     mapFunc: (u,x,y,z)=>{
         let v = u.noise(0);
-        v = v*0.9;
+        v = v*0.94;
         let s = seasonalSine(z);
         let l = land.get(x,u.basin.hemY(y));
         let pm = u.modifiers.polarMoisture;
@@ -794,7 +794,7 @@ STORM_ALGORITHM.defaults.core = function(sys,u){
     // Semi-Realistic Mode:
     
     sys.organization *= 100;
-    if(!lnd) sys.organization += 0.75*sq(map(SST,10,29,0,1,true))*(2.8+(constrain(log(moisture),-0.65,0)))*tropicalness*1.55;
+    if(!lnd) sys.organization += 0.65*sq(map(SST,10,29,0,1,true))*(2.9+(constrain(log(moisture),-0.65,0)))*tropicalness*1.57;
     if(!lnd && sys.organization < 40) sys.organization += lerp(0,3,nontropicalness);
 
     if(((sys.organization < 0.56) && (random(0,175) == 0)) ||
@@ -818,7 +818,7 @@ STORM_ALGORITHM.defaults.core = function(sys,u){
     sys.organization = constrain(sys.organization,0,100); 
     sys.organization /= 100;
 
-    let targetPressure = 1010-25*log((lnd||SST<24.7)?1:map(SST,24.7,30,1,2))/log(1.16);
+    let targetPressure = 1010-25*log((lnd||SST<24.7)?1:map(SST,24.7,30.7-((shear>0.85+random(0,2)/10)?1-moisture:pow(1.25,1+Math.round(moisture*1000)/1000)),1,2))/log(1.16);
     targetPressure = lerp(1010,targetPressure,pow(sys.organization,3-shear/50));
     sys.pressure = lerp(sys.pressure,targetPressure,(sys.pressure>targetPressure?0.05:0.08)*tropicalness);
     sys.pressure -= random(-3,3.5)*nontropicalness;
@@ -842,6 +842,7 @@ STORM_ALGORITHM.defaults.core = function(sys,u){
     if((random(0,50) == 50) && (moisture > 0.69) && ((SST > 25.9) && (sys.organization < 1))) sys.broadening = false;
     if((random(0,95) == 50) && (moisture > 0.69)) sys.broadening = false;
     if((sys.pressure < random(940,970)) && (random(0,29) == 0)) sys.broadening = false;
+    if(random(0,300) == 0) sys.broadening = false;
     
     let targetDepth = map(
         sys.upperWarmCore,
