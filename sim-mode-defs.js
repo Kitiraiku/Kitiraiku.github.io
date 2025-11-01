@@ -548,7 +548,7 @@ ENV_DEFS.defaults.SSTAnomaly = {
     version: 0,
     mapFunc: (u,x,y,z)=>{
         let v = u.noise(0);
-        v = v*1.85;
+        v = v*1.8;
         let i = v<1 ? -1 : 1;
         v = 1-abs(1-v);
         if(v===0) v = 0.000001;
@@ -690,7 +690,7 @@ ENV_DEFS.defaults.moisture = {
     version: 0,
     mapFunc: (u,x,y,z)=>{
         let v = u.noise(0);
-        v = v*0.9;
+        v = v*0.95;
         let s = seasonalSine(z+2*(0.05-0.1*random(0,1)));
         let l = land.get(x,u.basin.hemY(y));
         let pm = u.modifiers.polarMoisture;
@@ -714,8 +714,8 @@ ENV_DEFS.defaults.moisture = {
         return c;
     },
     modifiers: {
-        polarMoisture: 0.47,
-        tropicalMoisture: 0.53,
+        polarMoisture: 0.46,
+        tropicalMoisture: 0.52,
         mountainMoisture: 0.22
     },
     noiseChannels: [
@@ -765,7 +765,7 @@ STORM_ALGORITHM.defaults.steering = function(sys,vec,u){
     let ll = u.f("LLSteering");
     let ul = u.f("ULSteering");
     let d = sqrt(sys.depth)*0.85;
-    let x = lerp(ll.x,ul.x,d);       // Deeper systems follow upper-level steering more and lower-level steering less
+    let x = lerp(ll.x,ul.x,d)*1.05;       // Deeper systems follow upper-level steering more and lower-level steering less
     let y = lerp(ll.y,ul.y,d)*0.9;
     vec.set(x,y);
 };
