@@ -764,7 +764,7 @@ STORM_ALGORITHM[SIM_MODE_EXPERIMENTAL] = {};
 STORM_ALGORITHM.defaults.steering = function(sys,vec,u){
     let ll = u.f("LLSteering");
     let ul = u.f("ULSteering");
-    let d = sqrt(sys.depth)*0.85;
+    let d = sqrt(sys.depth)*0.9;
     let x = lerp(ll.x,ul.x,d)*1.05;       // Deeper systems follow upper-level steering more and lower-level steering less
     let y = lerp(ll.y,ul.y,d)*0.9;
     vec.set(x,y);
