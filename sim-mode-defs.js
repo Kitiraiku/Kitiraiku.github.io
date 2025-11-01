@@ -71,7 +71,7 @@ SPAWN_RULES.defaults.archetypes = {
         organization: 0,
         lowerWarmCore: 0,
         upperWarmCore: 0,
-        depth: 0.1*(random(7,10))
+        depth: [0.7,1]
     },
     'l': {
         inherit: 'tw',
