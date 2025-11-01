@@ -71,7 +71,7 @@ SPAWN_RULES.defaults.archetypes = {
         organization: 0,
         lowerWarmCore: 0,
         upperWarmCore: 0,
-        depth: 1
+        depth: 0.1*(random(7,10))
     },
     'l': {
         inherit: 'tw',
@@ -175,7 +175,7 @@ SPAWN_RULES.defaults.archetypes = {
 
 SPAWN_RULES.defaults.doSpawn = function(b){
     // tropical waves
-    if(random()<0.009*sq((seasonalSine(b.tick)+1.005)/2)) b.spawnArchetype('tw');
+    if(random()<0.009*sq((seasonalSine(b.tick)+1.003)/2)) b.spawnArchetype('tw');
     if(Math.round(random(1, 450)) == 1) b.spawnArchetype('tw');
 
     // extratropical cyclones
@@ -347,7 +347,7 @@ ENV_DEFS.defaults.LLSteering = {
         // noise angle
         let a = map(u.noise(3),0,1,0,4.14*TAU);
         // noise magnitude
-        let m = pow(1.5,map(u.noise(2),0,1,-6,4));
+        let m = pow(1.6,map(u.noise(2),0,1,-6,4));
 
         // apply to vector
         u.vec.rotate(a);
@@ -417,7 +417,7 @@ ENV_DEFS.defaults.ULSteering = {
         let tAngle = -PI/13.4;                                                                    // angle of push from jetstream dips
         let ridging = 0.6-j0/HEIGHT-map(sqrt(map(s,-1,1,0,1)),0,1,0.16,0);                     // how much 'ridge' or 'trough' there is from jetstream
         // power of winds equatorward of jetstream
-        let hadley = (map(ridging,-0.3,0.25,u.modifiers.hadleyUpperBound,1.5,true)+map(m,0,1,-1.5,1.5))*jOP*(y>j0?1:0)*1.01;
+        let hadley = (map(ridging,-0.3,0.25,u.modifiers.hadleyUpperBound,1.5,true)+map(m,0,1,-1.5,1.5))*jOP*(y>j0?1:0)*1.07;
         // angle of winds equatorward of jetstream
         let hAngle = map(ridging,-0.3,0.235,-PI/15,-14.9*PI/16,true);
         let ferrel = 2*jOP*(y<j0?1:0)*0.95;                                                          // power of winds poleward of jetstream
@@ -548,7 +548,7 @@ ENV_DEFS.defaults.SSTAnomaly = {
     version: 0,
     mapFunc: (u,x,y,z)=>{
         let v = u.noise(0);
-        v = v*1.75;
+        v = v*1.85;
         let i = v<1 ? -1 : 1;
         v = 1-abs(1-v);
         if(v===0) v = 0.000001;
@@ -715,8 +715,8 @@ ENV_DEFS.defaults.moisture = {
     },
     modifiers: {
         polarMoisture: 0.47,
-        tropicalMoisture: 0.5,
-        mountainMoisture: 0.19
+        tropicalMoisture: 0.53,
+        mountainMoisture: 0.22
     },
     noiseChannels: [
         [4,0.5,120,120,0.3,2]
@@ -764,7 +764,7 @@ STORM_ALGORITHM[SIM_MODE_EXPERIMENTAL] = {};
 STORM_ALGORITHM.defaults.steering = function(sys,vec,u){
     let ll = u.f("LLSteering");
     let ul = u.f("ULSteering");
-    let d = sqrt(sys.depth)*0.8;
+    let d = sqrt(sys.depth)*0.85;
     let x = lerp(ll.x,ul.x,d);       // Deeper systems follow upper-level steering more and lower-level steering less
     let y = lerp(ll.y,ul.y,d)*0.9;
     vec.set(x,y);
@@ -852,7 +852,7 @@ STORM_ALGORITHM.defaults.core = function(sys,u){
             0,1,
             sys.depth*pow(0.95,shear),max(map(sys.pressure,1010.8,950,0,0.7,true),sys.depth)
         )
-    )*0.3*tropicalness;
+    )*0.25*(tropicalness+0.6*nontropicalness);
     sys.depth = lerp(sys.depth,targetDepth,0.05);
     if (!lnd && sys.organization < 0.08 && Math.round(random(1,75) == 4)) sys.kill = true;
     if (lnd && sys.organization < 0.1 && Math.round(random(1,35) == 4)) sys.kill = true;
