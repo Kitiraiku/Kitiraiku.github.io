@@ -410,18 +410,18 @@ ENV_DEFS.defaults.ULSteering = {
         let j0 = u.field('jetstream');                                                          // y-position of jetstream
         let j1 = u.field('jetstream',x+dx);                                                     // y-position of jetstream dx to the east for differential
         let j = abs(y-j0);                                                                      // distance of point north/south of jetstream
-        let jet = pow(2.29,3-j/40);                                                                // power of jetstream at point
+        let jet = pow(2.2,3-j/40);                                                                // power of jetstream at point
         let jOP = pow(0.7,jet);                                                                 // factor for how strong other variables should be if 'overpowered' by jetstream
         let jAngle = atan((j1-j0)/dx)+map(y-j0,-50,50,PI/3,-PI/4,true);                         // angle of jetstream at point
         let trof = y>j0 ? pow(1.75,map(jAngle,-PI/2,PI/2,3,-5))*pow(0.7,j/20)*jOP : 0;           // pole-eastward push from jetstream dips
-        let tAngle = -PI/13.5;                                                                    // angle of push from jetstream dips
-        let ridging = 0.52-j0/HEIGHT-map(sqrt(map(s,-1,1,0,1)),0,1,0.16,0);                     // how much 'ridge' or 'trough' there is from jetstream
+        let tAngle = -PI/13.4;                                                                    // angle of push from jetstream dips
+        let ridging = 0.6-j0/HEIGHT-map(sqrt(map(s,-1,1,0,1)),0,1,0.16,0);                     // how much 'ridge' or 'trough' there is from jetstream
         // power of winds equatorward of jetstream
         let hadley = (map(ridging,-0.3,0.25,u.modifiers.hadleyUpperBound,1.5,true)+map(m,0,1,-1.5,1.5))*jOP*(y>j0?1:0)*1.01;
         // angle of winds equatorward of jetstream
-        let hAngle = map(ridging,-0.3,0.235,-PI/15,-15.1*PI/16,true);
+        let hAngle = map(ridging,-0.3,0.235,-PI/15,-14.9*PI/16,true);
         let ferrel = 2*jOP*(y<j0?1:0)*0.95;                                                          // power of winds poleward of jetstream
-        let fAngle = 4.367*PI/8;                                                                    // angle of winds poleward of jetstream
+        let fAngle = 4.1*PI/8;                                                                    // angle of winds poleward of jetstream
 
         let a = map(u.noise(0),0,1,0,5.05*TAU);                                                    // noise angle
         m = pow(1.55,map(m,0,1,-8,4))*jOP;                                                       // noise magnitude
@@ -480,7 +480,7 @@ ENV_DEFS[SIM_MODE_WILD].ULSteering = {
         // angle of winds equatorward of jetstream
         let hAngle = u.piecewise(s,[[1,11*PI/8],[2.5,9*PI/8],[4,17*PI/16],[4.5,11*PI/8],[5,17*PI/16],[6.5,35*PI/32],[7.5,17*PI/16],[8,31*PI/16],[9,15*PI/8],[10,7*PI/4],[10.5,11*PI/8]]);
         let ferrel = 2*jOP*(y<j0?map(j0-y,0,400,1,0,true):0);                           // power of winds poleward of jetstream
-        let fAngle = 5.5*PI/8;                                                            // angle of winds poleward of jetstream
+        let fAngle = 5.3*PI/8;                                                            // angle of winds poleward of jetstream
 
         let a = map(u.noise(0),0,1,0,4*TAU);                                            // noise angle
         m = pow(1.4,map(m,0,1,-3,4))*jOP;                                               // noise magnitude
