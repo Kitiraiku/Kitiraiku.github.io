@@ -235,7 +235,7 @@ Scale.saffirSimpson = new Scale({
     classifications: [
         {
             threshold: 0,
-            color: ['#2791f4','#5ebaff'],
+            color: ['#4d4dc6','#5ebaff'],
             subtropicalColor: ['rgb(60,60,220)','#5ebaff'],
             symbol: 'D',
             arms: 0,
@@ -246,8 +246,8 @@ Scale.saffirSimpson = new Scale({
         },
         {
             threshold: 34,
-            color: ['#b7f7aa','#00faf4'],
-            subtropicalColor: ['rgb(60,220,60)','#00faf4'],
+            color: ['#36c18e','#00faf4'],
+            subtropicalColor: ['#d8ffe3','#00faf4'],
             symbol: 'S',
             stormNom: 'Tropical Storm',
             subtropicalStormNom: 'Subtropical Storm',
@@ -256,7 +256,7 @@ Scale.saffirSimpson = new Scale({
         },
         {
             threshold: 64,
-            color: ['#e1f24d','#ffffcc'],
+            color: ['#e5d75e','#ffffcc'],
             symbol: '1',
             stormNom: ['Hurricane','Typhoon','Cyclone'],
             stat: ['Hurricanes','Typhoons','Cyclones'],
@@ -264,13 +264,13 @@ Scale.saffirSimpson = new Scale({
         },
         {
             threshold: 83,
-            color: ['#efc437','#ffe775'],
+            color: ['#c67f53','#ffe775'],
             symbol: '2',
             cName: 'Category 2'
         },
         {
             threshold: 96,
-            color: ['#ed6810','#ffc140'],
+            color: ['#c94f3c','#ffc140'],
             symbol: '3',
             stormNom: ['Major Hurricane','Typhoon','Cyclone'],
             stat: ['Major Hurricanes','Category 3+','Category 3+'],
@@ -278,13 +278,13 @@ Scale.saffirSimpson = new Scale({
         },
         {
             threshold: 113,
-            color: ['#ea002b','#ff8f20'],
+            color: ['#bf2050','#ff8f20'],
             symbol: '4',
             cName: 'Category 4'
         },
         {
             threshold: 130,
-            color: ['#f77eb2','#ff8f20'],
+            color: ['#ba4e90','#ff8f20'],
             symbol: '4',
             stormNom: ['Major Hurricane','Super Typhoon','Cyclone'],
             stat: [undefined,'Super Typhoons'],
@@ -292,7 +292,7 @@ Scale.saffirSimpson = new Scale({
         },
         {
             threshold: 137,
-            color: ['#8b1599','#8f1599'],
+            color: ['#8936c9','#882ee8'],
             symbol: '5',
             stat: 'Category 5s',
             cName: 'Category 5'
