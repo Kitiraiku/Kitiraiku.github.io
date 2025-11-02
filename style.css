@@ -1,9 +1,9 @@
 body{
 	background: #BBB;
-	background: -o-linear-gradient(#BBB,#F3F3F3);
-	background: -webkit-linear-gradient(#BBB,#F3F3F3);
-	background: -moz-linear-gradient(#BBB,#F3F3F3);
-	background: linear-gradient(#BBB,#F3F3F3);
+	background: -o-linear-gradient(#BBB,#5B504F);
+	background: -webkit-linear-gradient(#BBB,#5B504F);
+	background: -moz-linear-gradient(#BBB,#5B504F);
+	background: linear-gradient(#BBB,#5B504F);
 	font-family: Calibri, Arial;
 }
 
