@@ -417,7 +417,7 @@ ENV_DEFS.defaults.ULSteering = {
         let tAngle = -PI/13.4;                                                                    // angle of push from jetstream dips
         let ridging = 0.6-j0/HEIGHT-map(sqrt(map(s,-1,1,0,1)),0,1,0.16,0);                     // how much 'ridge' or 'trough' there is from jetstream
         // power of winds equatorward of jetstream
-        let hadley = (map(ridging,-0.3,0.25,u.modifiers.hadleyUpperBound,1.5,true)+map(m,0,1,-1.5,1.5))*jOP*(y>j0?1:0)*1.07;
+        let hadley = (map(ridging,-0.3,0.25,u.modifiers.hadleyUpperBound,1.5,true)+map(m,0,1,-1.5,1.5))*jOP*(y>j0?1:0)*1.01;
         // angle of winds equatorward of jetstream
         let hAngle = map(ridging,-0.3,0.235,-PI/15,-14.9*PI/16,true);
         let ferrel = 2*jOP*(y<j0?1:0)*0.95;                                                          // power of winds poleward of jetstream
@@ -824,7 +824,7 @@ STORM_ALGORITHM.defaults.core = function(sys,u){
     sys.pressure -= random(-3,3.5)*nontropicalness;
     // Additional Factors:
     if(moisture > 0.67) sys.pressure -= (random(0,1) / 5) * (nontropicalness / 3 + 1); // Non-SST related instabilty from mositure and extratropicalness
-    if((sys.pressure < random(960,990)) && (random(0,500 - 2*round(100*(1 - moisture))) == 0)) sys.broadening = true; // EWRC
+    if((sys.pressure < random(960,990)) && (random(0,500 - 3*round(100*(1 - moisture))) == 0)) sys.broadening = true; // EWRC
     if(sys.organization > 0.95) sys.pressure += (pow(1.4,1 + SST/9.5) - 1) / 2; // SST Impact Nerf
     if(random(1,(Math.round(80 - pow(shear,1.8)))) == 1) sys.pressure += random(1,3) / 2; // Convective Mishaps, amplified by shear
     if((tropicalness > nontropicalness) && (sys.pressure < 1000) && (random(1,Math.round(600-pow(shear*1.3,2))) == 0)) sys.pressure += random(6,23); // Disastrous Mishap
@@ -833,7 +833,8 @@ STORM_ALGORITHM.defaults.core = function(sys,u){
     sys.pressure += 0.51*sys.interaction.shear/(1+map(sys.lowerWarmCore,0,1,4,0));
     sys.pressure += map(jet,0,75,5*pow(1-sys.depth,4),0,true)*0.6;
     if(lnd && (sys.organization < 0.7) && (tropicalness > nontropicalness)) sys.pressure += (random(0,3) - 1) / 1.25; // Land interaction
-    if(sys.broadening && (sys.pressure < 1003)) sys.pressure += (random(0,2) - 0.9) / 1.5; // Filling in
+    if(sys.broadening && (sys.pressure < 1003)) sys.pressure += (random(0,2) - 0.9) / 1.3; // Filling in
+    if(sys.broadening && (sys.pressure < random(905,920))) sys.pressure += (random(0,2) - 0.9) / 1.3; // Imploding
 
     let targetWind = map(sys.pressure,1030,900,1,160)*map(sys.lowerWarmCore,1,0,1,0.6);
     sys.windSpeed = lerp(sys.windSpeed,targetWind,0.15);
@@ -852,7 +853,7 @@ STORM_ALGORITHM.defaults.core = function(sys,u){
             0,1,
             sys.depth*pow(0.95,shear),max(map(sys.pressure,1010.8,950,0,0.7,true),sys.depth)
         )
-    )*0.25*(tropicalness+0.6*nontropicalness);
+    )*0.4*(tropicalness+0.6*nontropicalness);
     sys.depth = lerp(sys.depth,targetDepth,0.05);
     if (!lnd && sys.organization < 0.08 && Math.round(random(1,75) == 4)) sys.kill = true;
     if (lnd && sys.organization < 0.1 && Math.round(random(1,35) == 4)) sys.kill = true;
