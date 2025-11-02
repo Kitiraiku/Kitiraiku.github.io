@@ -65,7 +65,7 @@ SPAWN_RULES.defaults.archetypes = {
         x: ()=>random(0,WIDTH-1),
         y: (b,x)=> ifJetstreamBound(b,x),
         broadening: false,
-        pressure: [1000, 1020],
+        pressure: [995, 1015],
         windSpeed: [15, 35],
         type: EXTROP,
         organization: [0,0.05],
@@ -176,11 +176,11 @@ SPAWN_RULES.defaults.archetypes = {
 SPAWN_RULES.defaults.doSpawn = function(b){
     // tropical waves
     if(random()<0.009*sq((seasonalSine(b.tick)+1.003)/2.1)) b.spawnArchetype('tw');
-    if(Math.round(random(1, 500)) == 1) b.spawnArchetype('tw');
+    if(Math.round(random(1, 490)) == 1) b.spawnArchetype('tw');
 
     // extratropical cyclones
     if(random()<0.005-0.002*seasonalSine(b.tick)) b.spawnArchetype('ex');
-    if(Math.round(random(1, 630)) == 2) b.spawnArchetype('ex');
+    if(Math.round(random(1, 550)) == 2) b.spawnArchetype('ex');
 };
 
 // -- Normal Mode -- //
@@ -342,7 +342,7 @@ ENV_DEFS.defaults.LLSteering = {
         let west = constrain(pow(1-h+map(u.noise(0),0,1,-0.3,0.3)+map(j,0,HEIGHT,-0.3,0.3),2)*4,0,4);
         // ridging and trades
         let ridging = constrain(u.noise(1)+map(j,0,HEIGHT,0.443,-0.443),0,1.4);
-        let trades = constrain(pow(0.4+h+map(ridging,0,1,-0.3,0.1),2)*3,0,3.2);
+        let trades = constrain(pow(0.43+h+map(ridging,0,1,-0.3,0.1),2)*3,0,3.2);
         let tAngle = map(h,0.89,1,510*PI/512,15.92*PI/16); // trades angle
         // noise angle
         let a = map(u.noise(3),0,1,0,4.14*TAU);
@@ -424,7 +424,7 @@ ENV_DEFS.defaults.ULSteering = {
         let fAngle = 4.1*PI/8;                                                                    // angle of winds poleward of jetstream
 
         let a = map(u.noise(0),0,1,0,5.05*TAU);                                                    // noise angle
-        m = pow(1.55,map(m,0,1,-8,4))*jOP;                                                       // noise magnitude
+        m = pow(1.8,map(m,0,1,-8,4))*jOP;                                                       // noise magnitude
 
         // apply noise
         u.vec.rotate(a);
@@ -690,7 +690,7 @@ ENV_DEFS.defaults.moisture = {
     version: 0,
     mapFunc: (u,x,y,z)=>{
         let v = u.noise(0);
-        v = v*0.98;
+        v = v*1.01;
         let s = seasonalSine(z+2*(0.05-0.1*random(0,1)))*0.9;
         let l = land.get(x,u.basin.hemY(y));
         let pm = u.modifiers.polarMoisture;
@@ -714,8 +714,8 @@ ENV_DEFS.defaults.moisture = {
         return c;
     },
     modifiers: {
-        polarMoisture: 0.5,
-        tropicalMoisture: 0.51,
+        polarMoisture: 0.51,
+        tropicalMoisture: 0.515,
         mountainMoisture: 0.22
     },
     noiseChannels: [
@@ -807,14 +807,14 @@ STORM_ALGORITHM.defaults.core = function(sys,u){
     sys.organization -= (pow(map(sys.depth,0,1,1.17,1.31),shear*1.1)-1)*map(sys.depth,0,1,4.6,1.2);
     sys.organization -= 1.1*map(moisture,0,0.66,3,0,true)*(shear*1.4);
     sys.organization += sq(map(moisture,0.6,1,0,1,true))*4.3;
-    if((nontropicalness > 0.16) && (nontropicalness < 0.4) && (moisture > 0.84) && (SST > 18.5)) sys.organization += moisture / 1.2;
-    if((!lnd) || (moisture > (random(92,100) / 100))) sys.organization += moisture / 1.4;
+    if((nontropicalness > 0.16) && (nontropicalness < 0.4) && (moisture > 0.67) && (SST > 18.5)) sys.organization += moisture / 1.25;
+    if((!lnd) || (moisture > (random(75,100) / 100))) sys.organization += moisture / 1.4;
     if(random(1,(Math.round(70 - pow(shear,2)))) == 1) sys.organization -= random(1,12); // General convective issues and etc.
     if(((moisture < 0.48) && (sys.organization < 61)) && (Math.round(random(1,27)) == 2)) sys.organization -= random(1,4); // Convective degrade due to lower moisture
     if((moisture < 0.38) && (random(1,60) < 3)) sys.organization -= random(2,4); // Intenser degrade due to very lacking moisture
     if(sys.broadening && (sys.organization < 0.93)) sys.organization -= random(0,1) / 2; // Broad boy
     sys.organization -= (pow(1.8,shear*1.1))*(0.2-sys.organization/100);
-    sys.organization -= pow(1.2,20-SST)*tropicalness*0.9;
+    sys.organization -= pow(1.21,20-SST)*tropicalness*0.9;
     if(sys.broadening) sys.organization -= random(1,3) / 2.3;
     sys.organization = constrain(sys.organization,0,100); 
     sys.organization /= 100;
@@ -854,7 +854,7 @@ STORM_ALGORITHM.defaults.core = function(sys,u){
             0,1,
             sys.depth*pow(0.95,shear),max(map(sys.pressure,1010.8,950,0,0.7,true),sys.depth)
         )
-    )*0.52*(tropicalness+0.6*nontropicalness);
+    )*0.575*(tropicalness+0.67*nontropicalness);
     sys.depth = lerp(sys.depth,targetDepth,0.05);
     if (!lnd && sys.organization < 0.08 && Math.round(random(1,75) == 4)) sys.kill = true;
     if (lnd && sys.organization < 0.1 && Math.round(random(1,35) == 4)) sys.kill = true;
