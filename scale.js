@@ -246,7 +246,7 @@ Scale.saffirSimpson = new Scale({
         },
         {
             threshold: 34,
-            color: ['#36c18e','#00faf4'],
+            color: ['#36c18f','#00faf4'],
             subtropicalColor: ['#d8ffe3','#00faf4'],
             symbol: 'S',
             stormNom: 'Tropical Storm',
