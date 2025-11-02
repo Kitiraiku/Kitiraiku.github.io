@@ -1,5 +1,5 @@
 body{
-	background-color: #5B504F;
+	background-color: #2D2D2D;
 	font-family: Calibri, Arial;
 }
 
@@ -13,7 +13,7 @@ a{
 	position: fixed;
 	bottom: 0px;
 	right: 0px;
-	color: #777;
+	color: #FFFFFF;
 	padding: 10px;
 	z-index: 100;
 	user-select: none;
