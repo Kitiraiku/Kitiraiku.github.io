@@ -31,7 +31,7 @@ a:after{
 }
 
 a:hover, a#version:hover{
-	color: black;
+	color: #9E0AB2;
 	transform-origin: 50% 50%;
 }
 
