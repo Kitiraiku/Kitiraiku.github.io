@@ -341,13 +341,13 @@ ENV_DEFS.defaults.LLSteering = {
         // westerlies
         let west = constrain(pow(1-h+map(u.noise(0),0,1,-0.3,0.3)+map(j,0,HEIGHT,-0.3,0.3),2)*4,0,4);
         // ridging and trades
-        let ridging = constrain(u.noise(1)+map(j,0,HEIGHT,0.443,-0.443),0,1.3);
-        let trades = constrain(pow(0.4+h+map(ridging,0,1,-0.3,0.1),2)*3,0,3.1);
+        let ridging = constrain(u.noise(1)+map(j,0,HEIGHT,0.443,-0.443),0,1.4);
+        let trades = constrain(pow(0.4+h+map(ridging,0,1,-0.3,0.1),2)*3,0,3.2);
         let tAngle = map(h,0.89,1,510*PI/512,15.92*PI/16); // trades angle
         // noise angle
         let a = map(u.noise(3),0,1,0,4.14*TAU);
         // noise magnitude
-        let m = pow(1.6,map(u.noise(2),0,1,-6,4));
+        let m = pow(1.7,map(u.noise(2),0,1,-6,4));
 
         // apply to vector
         u.vec.rotate(a);
@@ -764,7 +764,7 @@ STORM_ALGORITHM[SIM_MODE_EXPERIMENTAL] = {};
 STORM_ALGORITHM.defaults.steering = function(sys,vec,u){
     let ll = u.f("LLSteering");
     let ul = u.f("ULSteering");
-    let d = sqrt(sys.depth)*0.9;
+    let d = sqrt(sys.depth)*0.92;
     let x = lerp(ll.x,ul.x,d)*1.05;       // Deeper systems follow upper-level steering more and lower-level steering less
     let y = lerp(ll.y,ul.y,d)*0.9;
     vec.set(x,y);
