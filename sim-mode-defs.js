@@ -71,7 +71,7 @@ SPAWN_RULES.defaults.archetypes = {
         organization: [0,0.05],
         lowerWarmCore: [0,0.1],
         upperWarmCore: [0,0.05],
-        depth: [0.7,1]
+        depth: [0.5,1]
     },
     'l': {
         inherit: 'tw',
@@ -308,7 +308,7 @@ ENV_DEFS[SIM_MODE_HYPER].jetstream = {
 };
 ENV_DEFS[SIM_MODE_WILD].jetstream = {
     mapFunc: (u,x,y,z)=>{
-        let v = u.noise(0,x-z*3,0,z);
+        let v = u.noise(0,x-z*3.1,0,z);
         let s = u.yearfrac(z);
         let l = u.piecewise(s,[[1,0.65],[2.5,-0.15],[10,-0.15],[11.5,0.65]]);
         let r = u.piecewise(s,[[0.5,0.3],[1.75,0.7],[3,0.2],[9.5,0.2],[10.75,0.7],[12,0.3]]);
@@ -797,14 +797,14 @@ STORM_ALGORITHM.defaults.core = function(sys,u){
     if(!lnd) sys.organization += 0.6*sq(map(SST-1,10,28.5,0,1,true))*(2.9+(constrain(log(moisture),-0.65,0)))*tropicalness*1.57;
     if(!lnd && sys.organization < 40) sys.organization += lerp(0,3,nontropicalness);
 
-    if(((sys.organization < 0.9) && (random(0,195) == 0)) ||
-        ((random(0,20) == 0) && (SST < 20) && ((moisture < 0.6) || (shear > 23))))        // Early Broadening check
+    if(((sys.organization < 0.9) && (random(0,105) == 0)) ||
+        ((random(0,80) == 0) && (SST < 20) && ((moisture < 0.6) || (shear > 23))))        // Early Broadening check
         {sys.broadening = true;}         
-    if((moisture < (random(29,35)/100)) && (random(0,20) == 15)) sys.broadening = true;     // Dry air ingestion
+    if((moisture < (random(29,55)/100)) && (random(0,15) == 15)) sys.broadening = true;     // Dry air ingestion
     
     sys.organization -= pow(1.1,4-((HEIGHT-sys.basin.hemY(sys.pos.y))/(HEIGHT*0.01)));
     sys.organization -= (pow(map(sys.depth,0,1,1.17,1.31),shear*1.1)-1)*map(sys.depth,0,1,4.6,1.2);
-    sys.organization -= 1.25*map(moisture,0,0.66,3,0,true)*(shear*1.5);
+    sys.organization -= 1.4*map(moisture,0,0.68,3,0,true)*(shear*1.52);
     sys.organization += sq(map(moisture,0.6,1,0,1,true))*4.4;
     if((nontropicalness > 0.16) && (nontropicalness < 0.5) && (moisture > 0.67) && (SST > 18.5)) sys.organization += moisture;
     if((!lnd) || (moisture > (random(75,100) / 100))) sys.organization += moisture / 1.5;
