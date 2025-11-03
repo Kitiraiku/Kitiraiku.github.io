@@ -794,7 +794,8 @@ STORM_ALGORITHM.defaults.core = function(sys,u){
     // Semi-Realistic Mode:
     
     sys.organization *= 100;
-    if(!lnd) sys.organization += 0.6*sq(map(SST-1,10,28.5,0,1,true))*(2.9+(constrain(log(moisture),-0.65,0)))*tropicalness*1.57;
+    if((!lnd) && (sys.organization > 0.41)) sys.organization += 0.63*sq(map(SST-1,10,28.55,0,1,true))*(2.9+(constrain(log(moisture),-0.65,0)))*tropicalness*1.57;
+    if((!lnd) && (sys.organization <= 0.41)) sys.organization += 0.58*sq(map(SST-1,10,27.8,0,1,true))*(2.9+(constrain(log(moisture),-0.65,0)))*tropicalness*1.57;
     if(!lnd && sys.organization < 40) sys.organization += lerp(0,3,nontropicalness);
 
     if(((sys.organization < 0.9) && (random(0,105) == 0)) ||
@@ -804,7 +805,7 @@ STORM_ALGORITHM.defaults.core = function(sys,u){
     
     sys.organization -= pow(1.1,4-((HEIGHT-sys.basin.hemY(sys.pos.y))/(HEIGHT*0.01)));
     sys.organization -= (pow(map(sys.depth,0,1,1.17,1.31),shear*1.1)-1)*map(sys.depth,0,1,4.6,1.2);
-    sys.organization -= 1.4*map(moisture,0,0.68,3,0,true)*(shear*1.52);
+    sys.organization -= 1.4*map(moisture,0,0.68,3,0,true)*(shear*1.55);
     sys.organization += sq(map(moisture,0.6,1,0,1,true))*4.4;
     if((nontropicalness > 0.16) && (nontropicalness < 0.5) && (moisture > 0.67) && (SST > 18.5)) sys.organization += moisture;
     if((!lnd) || (moisture > (random(75,100) / 100))) sys.organization += moisture / 1.5;
@@ -932,16 +933,16 @@ STORM_ALGORITHM[SIM_MODE_EXPERIMENTAL].core = function(sys,u){
 STORM_ALGORITHM.defaults.typeDetermination = function(sys,u){
     switch(sys.type){
         case TROP:
-            sys.type = sys.lowerWarmCore<0.55 ? EXTROP : ((sys.organization<0.4 && sys.windSpeed<50) || sys.windSpeed<20) ? sys.upperWarmCore<0.56 ? EXTROP : TROPWAVE : sys.upperWarmCore<0.58 ? SUBTROP : TROP;
+            sys.type = sys.lowerWarmCore<0.5 ? EXTROP : ((sys.organization<0.4 && sys.windSpeed<50) || sys.windSpeed<20) ? sys.upperWarmCore<0.56 ? EXTROP : TROPWAVE : sys.upperWarmCore<0.58 ? SUBTROP : TROP;
             break;
         case SUBTROP:
-            sys.type = sys.lowerWarmCore<0.55 ? EXTROP : ((sys.organization<0.39 && sys.windSpeed<56) || sys.windSpeed<20) ? sys.upperWarmCore<0.57 ? EXTROP : TROPWAVE : sys.upperWarmCore<0.59 ? SUBTROP : TROP;
+            sys.type = sys.lowerWarmCore<0.5 ? EXTROP : ((sys.organization<0.39 && sys.windSpeed<56) || sys.windSpeed<20) ? sys.upperWarmCore<0.57 ? EXTROP : TROPWAVE : sys.upperWarmCore<0.59 ? SUBTROP : TROP;
             break;
         case TROPWAVE:
-            sys.type = sys.lowerWarmCore<0.55 ? EXTROP : (sys.organization<0.45 || sys.windSpeed<25) ? sys.upperWarmCore<0.56 ? EXTROP : TROPWAVE : sys.upperWarmCore<0.56 ? SUBTROP : TROP;
+            sys.type = sys.lowerWarmCore<0.5 ? EXTROP : (sys.organization<0.45 || sys.windSpeed<25) ? sys.upperWarmCore<0.56 ? EXTROP : TROPWAVE : sys.upperWarmCore<0.56 ? SUBTROP : TROP;
             break;
         default:
-            sys.type = sys.lowerWarmCore<0.6 ? EXTROP : (sys.organization<0.45 || sys.windSpeed<25) ? sys.upperWarmCore<0.57 ? EXTROP : TROPWAVE : sys.upperWarmCore<0.57 ? SUBTROP : TROP;
+            sys.type = sys.lowerWarmCore<0.55 ? EXTROP : (sys.organization<0.45 || sys.windSpeed<25) ? sys.upperWarmCore<0.57 ? EXTROP : TROPWAVE : sys.upperWarmCore<0.57 ? SUBTROP : TROP;
     }
 };
 
