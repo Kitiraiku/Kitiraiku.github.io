@@ -175,8 +175,8 @@ SPAWN_RULES.defaults.archetypes = {
 
 SPAWN_RULES.defaults.doSpawn = function(b){
     // tropical waves
-    if(random()<0.009*sq((seasonalSine(b.tick)+1.003)/2.1)) b.spawnArchetype('tw');
-    if(Math.round(random(1, 490)) == 1) b.spawnArchetype('tw');
+    if(random()<0.01*sq((seasonalSine(b.tick)+1.003)/2.1)) b.spawnArchetype('tw');
+    if(Math.round(random(1, 470)) == 1) b.spawnArchetype('tw');
 
     // extratropical cyclones
     if(random()<0.005-0.002*seasonalSine(b.tick)) b.spawnArchetype('ex');
@@ -341,7 +341,7 @@ ENV_DEFS.defaults.LLSteering = {
         // westerlies
         let west = constrain(pow(1-h+map(u.noise(0),0,1,-0.3,0.3)+map(j,0,HEIGHT,-0.3,0.3),2)*4,0,4);
         // ridging and trades
-        let ridging = constrain(u.noise(1)+map(j,0,HEIGHT,0.443,-0.443),0,1.4);
+        let ridging = constrain(u.noise(1)+map(j,0,HEIGHT,0.443,-0.443),0,1.45);
         let trades = constrain(pow(0.45+h+map(ridging,0,1,-0.3,0.1),2)*3,0,3.2);
         let tAngle = map(h,0.89,1,510*PI/512,15.92*PI/16); // trades angle
         // noise angle
@@ -414,17 +414,17 @@ ENV_DEFS.defaults.ULSteering = {
         let jOP = pow(0.9,jet);                                                                 // factor for how strong other variables should be if 'overpowered' by jetstream
         let jAngle = atan((j1-j0)/dx)+map(y-j0,-50,50,PI/3,-PI/4,true);                         // angle of jetstream at point
         let trof = y>j0 ? pow(1.73,map(jAngle,-PI/2,PI/2,3,-5))*pow(0.7,j/20)*jOP : 0;           // pole-eastward push from jetstream dips
-        let tAngle = -PI/13.4;                                                                    // angle of push from jetstream dips
-        let ridging = 0.62-j0/HEIGHT-map(sqrt(map(s,-1,1,0,1)),0,1,0.16,0);                     // how much 'ridge' or 'trough' there is from jetstream
+        let tAngle = -PI/13.6;                                                                    // angle of push from jetstream dips
+        let ridging = 0.65-j0/HEIGHT-map(sqrt(map(s,-1,1,0,1)),0,1,0.16,0);                     // how much 'ridge' or 'trough' there is from jetstream
         // power of winds equatorward of jetstream
         let hadley = (map(ridging,-0.3,0.25,u.modifiers.hadleyUpperBound,1.5,true)+map(m,0,1,-1.5,1.5))*jOP*(y>j0?1:0)*1.01;
         // angle of winds equatorward of jetstream
         let hAngle = map(ridging,-0.3,0.235,-PI/15,-14.7*PI/16,true);
         let ferrel = 1.8*jOP*(y<j0?1:0)*0.95;                                                          // power of winds poleward of jetstream
-        let fAngle = 4.1*PI/8;                                                                    // angle of winds poleward of jetstream
+        let fAngle = 4*PI/8;                                                                    // angle of winds poleward of jetstream
 
         let a = map(u.noise(0),0,1,0,5.05*TAU);                                                    // noise angle
-        m = pow(1.8,map(m,0,1,-8,4))*jOP;                                                       // noise magnitude
+        m = pow(1.6,map(m,0,1,-8,4))*jOP;                                                       // noise magnitude
 
         // apply noise
         u.vec.rotate(a);
