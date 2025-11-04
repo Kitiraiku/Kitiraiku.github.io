@@ -415,12 +415,12 @@ ENV_DEFS.defaults.ULSteering = {
         let jAngle = atan((j1-j0)/dx)+map(y-j0,-50,50,PI/3,-PI/4,true);                         // angle of jetstream at point
         let trof = y>j0 ? pow(1.73,map(jAngle,-PI/2,PI/2,3,-5))*pow(0.72,j/20)*jOP : 0;           // pole-eastward push from jetstream dips
         let tAngle = -PI/13.55;                                                                    // angle of push from jetstream dips
-        let ridging = 0.66-j0/HEIGHT-map(sqrt(map(s,-1,1,0,1)),0,1,0.16,0);                     // how much 'ridge' or 'trough' there is from jetstream
+        let ridging = 0.65-j0/HEIGHT-map(sqrt(map(s,-1,1,0,1)),0,1,0.16,0);                     // how much 'ridge' or 'trough' there is from jetstream
         // power of winds equatorward of jetstream
         let hadley = (map(ridging,-0.3,0.25,u.modifiers.hadleyUpperBound,1.5,true)+map(m,0,1,-1.5,1.5))*jOP*(y>j0?1:0)*1.01;
         // angle of winds equatorward of jetstream
         let hAngle = map(ridging,-0.3,0.235,-PI/15,-14.7*PI/16,true);
-        let ferrel = 1.8*jOP*(y<j0?1:0)*0.95;                                                          // power of winds poleward of jetstream
+        let ferrel = 1.75*jOP*(y<j0?1:0)*0.95;                                                          // power of winds poleward of jetstream
         let fAngle = 4.05*PI/8;                                                                    // angle of winds poleward of jetstream
 
         let a = map(u.noise(0),0,1,0,5.05*TAU);                                                    // noise angle
@@ -690,8 +690,8 @@ ENV_DEFS.defaults.moisture = {
     version: 0,
     mapFunc: (u,x,y,z)=>{
         let v = u.noise(0);
-        v = v*1.01;
-        let s = seasonalSine(z+2.1*(0.05-0.1*random(0,1)))*0.9;
+        v = v*1.02;
+        let s = seasonalSine(z+2.3*(0.05-0.1*random(0,1)))*0.9;
         let l = land.get(x,u.basin.hemY(y));
         let pm = u.modifiers.polarMoisture;
         let tm = u.modifiers.tropicalMoisture;
@@ -715,7 +715,7 @@ ENV_DEFS.defaults.moisture = {
     },
     modifiers: {
         polarMoisture: 0.51,
-        tropicalMoisture: 0.5175,
+        tropicalMoisture: 0.52,
         mountainMoisture: 0.23
     },
     noiseChannels: [
@@ -764,7 +764,7 @@ STORM_ALGORITHM[SIM_MODE_EXPERIMENTAL] = {};
 STORM_ALGORITHM.defaults.steering = function(sys,vec,u){
     let ll = u.f("LLSteering");
     let ul = u.f("ULSteering");
-    let d = sqrt(sys.depth)*0.825;
+    let d = sqrt(sys.depth)*0.82;
     let x = lerp(ll.x,ul.x,d);       // Deeper systems follow upper-level steering more and lower-level steering less
     let y = lerp(ll.y,ul.y,d);
     vec.set(x,y);
