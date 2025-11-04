@@ -1,5 +1,5 @@
 const TITLE = "Silly Cyclone Simulator";
-const VERSION_NUMBER = "0.7 Release Candidate 1";
+const VERSION_NUMBER = "0.7 Release Candidate 2";
 
 const SAVE_FORMAT = 6;  // Format #6 in use starting in v0.2
 const EARLIEST_COMPATIBLE_FORMAT = 0;
