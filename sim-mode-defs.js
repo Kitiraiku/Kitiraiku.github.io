@@ -71,7 +71,7 @@ SPAWN_RULES.defaults.archetypes = {
         organization: [0,0.05],
         lowerWarmCore: [0,0.1],
         upperWarmCore: [0,0.05],
-        depth: [0.5,1]
+        depth: [0.45,1]
     },
     'l': {
         inherit: 'tw',
@@ -175,12 +175,12 @@ SPAWN_RULES.defaults.archetypes = {
 
 SPAWN_RULES.defaults.doSpawn = function(b){
     // tropical waves
-    if(random()<(0.009*sq((seasonalSine(b.tick)+1.003)/2)+0.001)) b.spawnArchetype('tw');
-    if(Math.round(random(1, 460)) == 1) b.spawnArchetype('tw');
+    if(random()<(0.01*sq((seasonalSine(b.tick)+1)/2)+0.001)) b.spawnArchetype('tw');
+    if(Math.round(random(1, 510)) == 1) b.spawnArchetype('tw');
 
     // extratropical cyclones
-    if(random()<0.005-0.002*seasonalSine(b.tick)) b.spawnArchetype('ex');
-    if(Math.round(random(1, 510)) == 2) b.spawnArchetype('ex');
+    if(random()<0.0044-0.002*seasonalSine(b.tick)) b.spawnArchetype('ex');
+    if(Math.round(random(1, 500)) == 2) b.spawnArchetype('ex');
 };
 
 // -- Normal Mode -- //
@@ -690,8 +690,8 @@ ENV_DEFS.defaults.moisture = {
     version: 0,
     mapFunc: (u,x,y,z)=>{
         let v = u.noise(0);
-        v = v*1.02;
-        let s = seasonalSine(z+2.3*(0.05-0.1*random(0,1)))*0.9;
+        v = v*1.2;
+        let s = seasonalSine(z+2.4*(0.05-0.1*random(0,1)))*0.9;
         let l = land.get(x,u.basin.hemY(y));
         let pm = u.modifiers.polarMoisture;
         let tm = u.modifiers.tropicalMoisture;
@@ -714,7 +714,7 @@ ENV_DEFS.defaults.moisture = {
         return c;
     },
     modifiers: {
-        polarMoisture: 0.51,
+        polarMoisture: 0.52,
         tropicalMoisture: 0.52,
         mountainMoisture: 0.23
     },
@@ -804,11 +804,11 @@ STORM_ALGORITHM.defaults.core = function(sys,u){
     if((moisture < (random(29,55)/100)) && (random(0,15) == 15)) sys.broadening = true;     // Dry air ingestion
     
     sys.organization -= pow(1.1,4-((HEIGHT-sys.basin.hemY(sys.pos.y))/(HEIGHT*0.01)));
-    sys.organization -= (pow(map(sys.depth,0,1,1.17,1.31),shear*1.3)-1)*map(sys.depth,0,1,4.6,1.2);
+    sys.organization -= (pow(map(sys.depth,0,1,1.17,1.31),shear*1.31)-1)*map(sys.depth,0,1,4.6,1.2);
     sys.organization -= 1.37*map(moisture,0,0.68,3,0,true)*(shear*2);
     sys.organization += sq(map(moisture,0.6,1,0,1,true))*4.45;
-    if((nontropicalness > 0.16) && (nontropicalness < 0.5) && (moisture > 0.67) && (SST > 18.5)) sys.organization += moisture;
-    if((!lnd) || (moisture > (random(75,100) / 100))) sys.organization += moisture / 1.4;
+    if((nontropicalness > 0.16) && (nontropicalness < 0.56) && (moisture > 0.67) && (SST > 18.5)) sys.organization += moisture;
+    if((!lnd) || (moisture > (random(70,100) / 100))) sys.organization += moisture / 1.3;
     if(random(0,(Math.round(60 - pow(shear*5,2)))) == 1) sys.organization -= random(1,12); // General convective issues and etc.
     if(((moisture < 0.48) && (sys.organization < 61)) && (Math.round(random(1,27)) == 2)) sys.organization -= random(1,4); // Convective degrade due to lower moisture
     if((moisture < 0.38) && (random(1,60) < 3)) sys.organization -= random(2,4); // Intenser degrade due to very lacking moisture
@@ -854,7 +854,7 @@ STORM_ALGORITHM.defaults.core = function(sys,u){
             0,1,
             sys.depth*pow(0.95,shear),max(map(sys.pressure,1010.8,950,0,0.7,true),sys.depth)
         )
-    )*0.61*(tropicalness+0.4*nontropicalness);
+    )*0.6*(1.1*tropicalness+0.4*nontropicalness);
     sys.depth = lerp(sys.depth,targetDepth,0.05);
     if (!lnd && sys.organization < 0.08 && Math.round(random(1,75) == 4)) sys.kill = true;
     if (lnd && sys.organization < 0.1 && Math.round(random(1,35) == 4)) sys.kill = true;
