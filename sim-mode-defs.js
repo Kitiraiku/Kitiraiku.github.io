@@ -175,12 +175,12 @@ SPAWN_RULES.defaults.archetypes = {
 
 SPAWN_RULES.defaults.doSpawn = function(b){
     // tropical waves
-    if(random()<0.01*sq((seasonalSine(b.tick)+1.003)/2.1)) b.spawnArchetype('tw');
-    if(Math.round(random(1, 470)) == 1) b.spawnArchetype('tw');
+    if(random()<(0.009*sq((seasonalSine(b.tick)+1.003)/2.1)+0.002)) b.spawnArchetype('tw');
+    if(Math.round(random(1, 460)) == 1) b.spawnArchetype('tw');
 
     // extratropical cyclones
     if(random()<0.005-0.002*seasonalSine(b.tick)) b.spawnArchetype('ex');
-    if(Math.round(random(1, 550)) == 2) b.spawnArchetype('ex');
+    if(Math.round(random(1, 510)) == 2) b.spawnArchetype('ex');
 };
 
 // -- Normal Mode -- //
@@ -292,9 +292,9 @@ ENV_DEFS.defaults.jetstream = {
     ],
     modifiers: {
         peakLat: 0.45,
-        antiPeakLat: 0.6,
+        antiPeakLat: 0.63,
         peakRange: 0.35,
-        antiPeakRange: 0.56
+        antiPeakRange: 0.61
     }
 };
 ENV_DEFS[SIM_MODE_NORMAL].jetstream = {};
@@ -411,9 +411,9 @@ ENV_DEFS.defaults.ULSteering = {
         let j1 = u.field('jetstream',x+dx);                                                     // y-position of jetstream dx to the east for differential
         let j = abs(y-j0);                                                                      // distance of point north/south of jetstream
         let jet = pow(2,3-j/40);                                                                // power of jetstream at point
-        let jOP = pow(0.9,jet);                                                                 // factor for how strong other variables should be if 'overpowered' by jetstream
+        let jOP = pow(0.83,jet);                                                                 // factor for how strong other variables should be if 'overpowered' by jetstream
         let jAngle = atan((j1-j0)/dx)+map(y-j0,-50,50,PI/3,-PI/4,true);                         // angle of jetstream at point
-        let trof = y>j0 ? pow(1.73,map(jAngle,-PI/2,PI/2,3,-5))*pow(0.7,j/20)*jOP : 0;           // pole-eastward push from jetstream dips
+        let trof = y>j0 ? pow(1.73,map(jAngle,-PI/2,PI/2,3,-5))*pow(0.72,j/20)*jOP : 0;           // pole-eastward push from jetstream dips
         let tAngle = -PI/13.6;                                                                    // angle of push from jetstream dips
         let ridging = 0.65-j0/HEIGHT-map(sqrt(map(s,-1,1,0,1)),0,1,0.16,0);                     // how much 'ridge' or 'trough' there is from jetstream
         // power of winds equatorward of jetstream
@@ -933,13 +933,13 @@ STORM_ALGORITHM[SIM_MODE_EXPERIMENTAL].core = function(sys,u){
 STORM_ALGORITHM.defaults.typeDetermination = function(sys,u){
     switch(sys.type){
         case TROP:
-            sys.type = sys.lowerWarmCore<0.5 ? EXTROP : ((sys.organization<0.4 && sys.windSpeed<50) || sys.windSpeed<20) ? sys.upperWarmCore<0.56 ? EXTROP : TROPWAVE : sys.upperWarmCore<0.58 ? SUBTROP : TROP;
+            sys.type = sys.lowerWarmCore<0.55 ? EXTROP : ((sys.organization<0.4 && sys.windSpeed<50) || sys.windSpeed<20) ? sys.upperWarmCore<0.56 ? EXTROP : TROPWAVE : sys.upperWarmCore<0.58 ? SUBTROP : TROP;
             break;
         case SUBTROP:
             sys.type = sys.lowerWarmCore<0.5 ? EXTROP : ((sys.organization<0.39 && sys.windSpeed<56) || sys.windSpeed<20) ? sys.upperWarmCore<0.57 ? EXTROP : TROPWAVE : sys.upperWarmCore<0.59 ? SUBTROP : TROP;
             break;
         case TROPWAVE:
-            sys.type = sys.lowerWarmCore<0.5 ? EXTROP : (sys.organization<0.45 || sys.windSpeed<25) ? sys.upperWarmCore<0.56 ? EXTROP : TROPWAVE : sys.upperWarmCore<0.56 ? SUBTROP : TROP;
+            sys.type = sys.lowerWarmCore<0.55 ? EXTROP : (sys.organization<0.45 || sys.windSpeed<25) ? sys.upperWarmCore<0.56 ? EXTROP : TROPWAVE : sys.upperWarmCore<0.56 ? SUBTROP : TROP;
             break;
         default:
             sys.type = sys.lowerWarmCore<0.55 ? EXTROP : (sys.organization<0.45 || sys.windSpeed<25) ? sys.upperWarmCore<0.57 ? EXTROP : TROPWAVE : sys.upperWarmCore<0.57 ? SUBTROP : TROP;
