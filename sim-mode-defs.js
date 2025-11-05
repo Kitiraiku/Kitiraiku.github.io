@@ -411,7 +411,7 @@ ENV_DEFS.defaults.ULSteering = {
         let j1 = u.field('jetstream',x+dx);                                                     // y-position of jetstream dx to the east for differential
         let j = abs(y-j0);                                                                      // distance of point north/south of jetstream
         let jet = pow(2,3-j/40);                                                                // power of jetstream at point
-        let jOP = pow(0.83,jet);                                                                 // factor for how strong other variables should be if 'overpowered' by jetstream
+        let jOP = pow(0.82,jet);                                                                 // factor for how strong other variables should be if 'overpowered' by jetstream
         let jAngle = atan((j1-j0)/dx)+map(y-j0,-50,50,PI/3,-PI/4,true);                         // angle of jetstream at point
         let trof = y>j0 ? pow(1.73,map(jAngle,-PI/2,PI/2,3,-5))*pow(0.72,j/20)*jOP : 0;           // pole-eastward push from jetstream dips
         let tAngle = -PI/13.55;                                                                    // angle of push from jetstream dips
@@ -424,7 +424,7 @@ ENV_DEFS.defaults.ULSteering = {
         let fAngle = 4.05*PI/8;                                                                    // angle of winds poleward of jetstream
 
         let a = map(u.noise(0),0,1,0,5.05*TAU);                                                    // noise angle
-        m = pow(1.7,map(m,0,1,-8,4))*jOP;                                                       // noise magnitude
+        m = pow(1.78,map(m,0,1,-8,4))*jOP;                                                       // noise magnitude
 
         // apply noise
         u.vec.rotate(a);
