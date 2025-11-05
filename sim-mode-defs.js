@@ -69,7 +69,7 @@ SPAWN_RULES.defaults.archetypes = {
         windSpeed: [15, 35],
         type: EXTROP,
         organization: [0,0.05],
-        lowerWarmCore: [0,0.1],
+        lowerWarmCore: [0,0.13],
         upperWarmCore: [0,0.05],
         depth: [0.45,1]
     },
@@ -175,8 +175,8 @@ SPAWN_RULES.defaults.archetypes = {
 
 SPAWN_RULES.defaults.doSpawn = function(b){
     // tropical waves
-    if(random()<(0.01*sq((seasonalSine(b.tick)+1)/2)+0.001)) b.spawnArchetype('tw');
-    if(Math.round(random(1, 510)) == 1) b.spawnArchetype('tw');
+    if(random()<(0.01*sq((seasonalSine(b.tick)+1.001)/2)+0.001)) b.spawnArchetype('tw');
+    if(Math.round(random(1, 530)) == 1) b.spawnArchetype('tw');
 
     // extratropical cyclones
     if(random()<0.0044-0.002*seasonalSine(b.tick)) b.spawnArchetype('ex');
@@ -294,7 +294,7 @@ ENV_DEFS.defaults.jetstream = {
         peakLat: 0.45,
         antiPeakLat: 0.63,
         peakRange: 0.33,
-        antiPeakRange: 0.61
+        antiPeakRange: 0.68
     }
 };
 ENV_DEFS[SIM_MODE_NORMAL].jetstream = {};
@@ -417,7 +417,7 @@ ENV_DEFS.defaults.ULSteering = {
         let tAngle = -PI/13.55;                                                                    // angle of push from jetstream dips
         let ridging = 0.65-j0/HEIGHT-map(sqrt(map(s,-1,1,0,1)),0,1,0.16,0);                     // how much 'ridge' or 'trough' there is from jetstream
         // power of winds equatorward of jetstream
-        let hadley = (map(ridging,-0.3,0.25,u.modifiers.hadleyUpperBound,1.5,true)+map(m,0,1,-1.5,1.5))*jOP*(y>j0?1:0)*1.01;
+        let hadley = (map(ridging,-0.3,0.25,u.modifiers.hadleyUpperBound,1.5,true)+map(m,0,1,-1.5,1.5))*jOP*(y>j0?1:0)*1.03;
         // angle of winds equatorward of jetstream
         let hAngle = map(ridging,-0.3,0.235,-PI/15,-14.7*PI/16,true);
         let ferrel = 1.75*jOP*(y<j0?1:0)*0.95;                                                          // power of winds poleward of jetstream
@@ -652,7 +652,7 @@ ENV_DEFS.defaults.SST = {
         offSeasonPolarTemp: 4.5,
         peakSeasonPolarTemp: 12.5,
         offSeasonTropicsTemp: 25.1,
-        peakSeasonTropicsTemp: 28.1
+        peakSeasonTropicsTemp: 28.05
     }
 };
 ENV_DEFS[SIM_MODE_NORMAL].SST = {};
@@ -690,7 +690,7 @@ ENV_DEFS.defaults.moisture = {
     version: 0,
     mapFunc: (u,x,y,z)=>{
         let v = u.noise(0);
-        v = v*1.2;
+        v = v*1.1;
         let s = seasonalSine(z+2.4*(0.05-0.1*random(0,1)))*0.9;
         let l = land.get(x,u.basin.hemY(y));
         let pm = u.modifiers.polarMoisture;
@@ -714,9 +714,9 @@ ENV_DEFS.defaults.moisture = {
         return c;
     },
     modifiers: {
-        polarMoisture: 0.52,
-        tropicalMoisture: 0.52,
-        mountainMoisture: 0.23
+        polarMoisture: 0.5,
+        tropicalMoisture: 0.51,
+        mountainMoisture: 0.28
     },
     noiseChannels: [
         [4,0.5,120,120,0.3,2]
@@ -794,21 +794,21 @@ STORM_ALGORITHM.defaults.core = function(sys,u){
     // Semi-Realistic Mode:
     
     sys.organization *= 100;
-    if((!lnd) && (sys.organization > 45)) sys.organization += 0.63*sq(map(SST-1,10,28.55,0,1,true))*(2.9+(constrain(log(moisture),-0.65,0)))*tropicalness*1.57;
-    if((!lnd) && (sys.organization <= 45)) sys.organization += 0.59*sq(map(SST-1,10,27.8,0,1,true))*(2.9+(constrain(log(moisture),-0.65,0)))*tropicalness*1.57;
+    if((!lnd) && (sys.organization > 45)) sys.organization += 0.632*sq(map(SST-1,10,28.55,0,1,true))*(2.9+(constrain(log(moisture),-0.65,0)))*tropicalness*1.57;
+    if((!lnd) && (sys.organization <= 45)) sys.organization += 0.576*sq(map(SST-1,10,27.8,0,1,true))*(2.9+(constrain(log(moisture),-0.65,0)))*tropicalness*1.57;
     if(!lnd && sys.organization < 40) sys.organization += lerp(0,3,nontropicalness);
 
     if(((sys.organization < 60) && (random(0,105) == 0)) ||
         ((random(0,80) == 0) && (SST < 20) && ((moisture < 0.6) || (shear > 3.3))))        // Early Broadening check
         {sys.broadening = true;}         
-    if((moisture < (random(29,55)/100)) && (random(0,15) == 15)) sys.broadening = true;     // Dry air ingestion
+    if((moisture < (random(29,59)/100)) && (random(0,15) == 15)) sys.broadening = true;     // Dry air ingestion
     
     sys.organization -= pow(1.1,4-((HEIGHT-sys.basin.hemY(sys.pos.y))/(HEIGHT*0.01)));
     sys.organization -= (pow(map(sys.depth,0,1,1.17,1.31),shear*1.31)-1)*map(sys.depth,0,1,4.6,1.2);
-    sys.organization -= 1.37*map(moisture,0,0.68,3,0,true)*(shear*2);
-    sys.organization += sq(map(moisture,0.6,1,0,1,true))*4.45;
+    sys.organization -= 1.4*map(moisture,0,0.68,3,0,true)*(shear*2);
+    sys.organization += sq(map(moisture,0.6,1,0,1,true))*4.4;
     if((nontropicalness > 0.16) && (nontropicalness < 0.56) && (moisture > 0.67) && (SST > 18.5)) sys.organization += moisture;
-    if((!lnd) || (moisture > (random(70,100) / 100))) sys.organization += moisture / 1.3;
+    if((!lnd) || (moisture > (random(70,100) / 100))) sys.organization += moisture / 1.35;
     if(random(0,(Math.round(60 - pow(shear*5,2)))) == 1) sys.organization -= random(1,12); // General convective issues and etc.
     if(((moisture < 0.48) && (sys.organization < 61)) && (Math.round(random(1,27)) == 2)) sys.organization -= random(1,4); // Convective degrade due to lower moisture
     if((moisture < 0.38) && (random(1,60) < 3)) sys.organization -= random(2,4); // Intenser degrade due to very lacking moisture
