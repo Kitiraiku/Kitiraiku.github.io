@@ -1,11 +1,22 @@
 About: A p5.js tropical cyclone simulation game
 Based on and off Cyclone Sim v0.3.6 (2020-12-26) by MonsoonJr99, all credits go to him
 
+
+v0.7
+
++ The Simulator is now called "Silly Cyclone Simulator"
++ "Semi-Realistic Mode" is now named "Regular"
++ Changed Colours of the regular Saffir-Simpson scale
++ Literally Tinkered around with everything, from storm algorithm to enviromental things and patterns
+Note: "Regular" Mode is the only one being maintained right now
+
+
 v0.6
 
 Semi-Realistic Mode:
 + Further improved impacts on systems from adverse factors, storms should feel more realistic strength-wise
 + Slighty tweaked the air currents
+
 
 v0.5
 
@@ -13,6 +24,7 @@ Semi-Realistic Mode:
 + Improving vulnearbility of storms by adding a broadening variable
 + Tweaking Moisture, Jetstream, Upper Level and Lower Level Patterns
 + Tweaking Steering
+
 
 v0.4.1
 
@@ -22,6 +34,7 @@ Semi-Realistic Mode:
 + Fixed EX spawns (my "ifJetstreamBound" function had wrong "bracketing")
 + Spawn rates altered
 
+
 v0.4:
 
 + Newer storm algorithm
@@ -29,17 +42,21 @@ v0.4:
 + Upper and lower level steering (and resulting shear) changes
 + Minor other changes
 
+
 v0.3.0d:
 
 + Now based off v0.3.6 (2020-12-26) Cyclone Sim by MonsoonJr99
+
 
 v0.3.0c:
 
 + Now based off v0.3.5 (2020-12-25) Cyclone Sim by MonsoonJr99
 
+
 v0.3.0b:
 
 + Copypasted desperately needed UI improvements which MonsoonJr99 implemented in his original sim
+
 
 v0.3.0:
 
@@ -47,22 +64,27 @@ v0.3.0:
 + Changed spawnrates
 + Tweaked moisture, steering and climate
 
+
 v0.2.2:
 
 + Improved algorithm ¯\_(ツ)_/¯
+
 
 v0.2.1e Exp. :
 v0.2.1d Exp. :
 
 + Read previous
 
+
 v0.2.1c Experimental:
 
 + Fixing the algorithm and improving it
 
+
 v0.2.1b: 
 
 + Debuffed moisture
+
 
 v0.2.1: Surprising change:
 
@@ -70,16 +92,19 @@ v0.2.1: Surprising change:
 
 The steering will be the main focus unless something gets unveiled about the storm algorithm (and it did!)
 
+
 v0.2.0: Many changes:
 
 + Much tweaking on steering (influencing the shear of course) and some on moisture
 + Improved storm algorithm
 + Some other changes
 
+
 v0.1.1: Some changes:
 + Tweaked spawn rates and location, and added a function which allows non-tropical lows to form deeper down, and lows can form off-season now
 + Minimally tweaked climate, SSTs and SST-Anomalies
 + Enhanced the algorithm with constrains
+
 
 v0.1.0: Replaced Normal with Semi-Realisic, aiming at less excessive dependence on sea surface temperatures from the Storm algorithm, which
 is modified here, including some random EWRCs. Also took many sea suface temperature anomalies and steering settings from Magicdrizzles fork.
