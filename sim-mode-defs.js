@@ -275,7 +275,7 @@ ENV_DEFS[SIM_MODE_EXPERIMENTAL] = {}; // "Experimental" simulation mode
 ENV_DEFS.defaults.jetstream = {
     version: 0,
     mapFunc: (u,x,y,z)=>{
-        let v = u.noise(0,x-z*2.8,0,z);
+        let v = u.noise(0,x-z*2.7,0,z);
         let peakLat = u.modifiers.peakLat;
         let antiPeakLat = u.modifiers.antiPeakLat;
         let peakRange = u.modifiers.peakRange;
@@ -345,7 +345,7 @@ ENV_DEFS.defaults.LLSteering = {
         let trades = constrain(pow(0.45+h+map(ridging,0,1,-0.3,0.1),2)*3,0,3.2);
         let tAngle = map(h,0.89,1,510*PI/512,15.92*PI/16); // trades angle
         // noise angle
-        let a = map(u.noise(3),0,1,0,4.18*TAU);
+        let a = map(u.noise(3),0,1,0,4.2*TAU);
         // noise magnitude
         let m = pow(1.61,map(u.noise(2),0,1,-6,4));
 
@@ -417,7 +417,7 @@ ENV_DEFS.defaults.ULSteering = {
         let tAngle = -PI/13.55;                                                                    // angle of push from jetstream dips
         let ridging = 0.65-j0/HEIGHT-map(sqrt(map(s,-1,1,0,1)),0,1,0.16,0);                     // how much 'ridge' or 'trough' there is from jetstream
         // power of winds equatorward of jetstream
-        let hadley = (map(ridging,-0.3,0.25,u.modifiers.hadleyUpperBound,1.5,true)+map(m,0,1,-1.5,1.5))*jOP*(y>j0?1:0)*1.03;
+        let hadley = (map(ridging,-0.3,0.25,u.modifiers.hadleyUpperBound,1.5,true)+map(m,0,1,-1.5,1.5))*jOP*(y>j0?1:0)*1.085;
         // angle of winds equatorward of jetstream
         let hAngle = map(ridging,-0.3,0.235,-PI/15,-14.7*PI/16,true);
         let ferrel = 1.75*jOP*(y<j0?1:0)*0.95;                                                          // power of winds poleward of jetstream
