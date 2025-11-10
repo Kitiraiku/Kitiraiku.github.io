@@ -690,7 +690,7 @@ ENV_DEFS.defaults.moisture = {
     version: 0,
     mapFunc: (u,x,y,z)=>{
         let v = u.noise(0);
-        v = v*1.125;
+        v = v*1.25;
         let s = seasonalSine(z+2.4*(0.05-0.1*random(0,1)))*0.9;
         let l = land.get(x,u.basin.hemY(y));
         let pm = u.modifiers.polarMoisture;
@@ -714,9 +714,9 @@ ENV_DEFS.defaults.moisture = {
         return c;
     },
     modifiers: {
-        polarMoisture: 0.49,
-        tropicalMoisture: 0.49,
-        mountainMoisture: 0.28
+        polarMoisture: 0.482,
+        tropicalMoisture: 0.475,
+        mountainMoisture: 0.27
     },
     noiseChannels: [
         [4,0.5,120,120,0.3,2]
@@ -794,8 +794,8 @@ STORM_ALGORITHM.defaults.core = function(sys,u){
     // Semi-Realistic Mode:
     
     sys.organization *= 100;
-    if((!lnd) && (sys.organization > 45)) sys.organization += 0.629*sq(map(SST-1,10,28.55,0,1,true))*(2.9+(constrain(log(moisture),-0.65,0)))*tropicalness*1.57;
-    if((!lnd) && (sys.organization <= 45)) sys.organization += 0.57*sq(map(SST-1,10,27.8,0,1,true))*(2.9+(constrain(log(moisture),-0.65,0)))*tropicalness*1.57;
+    if((!lnd) && (sys.organization > 65)) sys.organization += 0.629*sq(map(SST-1,10,28.55,0,1,true))*(2.9+(constrain(log(moisture),-0.65,0)))*tropicalness*1.55;
+    if((!lnd) && (sys.organization <= 65)) sys.organization += 0.57*sq(map(SST-1,10,27.8,0,1,true))*(2.9+(constrain(log(moisture),-0.65,0)))*tropicalness*1.45*(1+nontropicalness);
     if(!lnd && sys.organization < 40) sys.organization += lerp(0,3,nontropicalness);
 
     if(((sys.organization < 60) && (random(0,105) == 0)) ||
@@ -804,11 +804,11 @@ STORM_ALGORITHM.defaults.core = function(sys,u){
     if((moisture < (random(29,59)/100)) && (random(0,15) == 15)) sys.broadening = true;     // Dry air ingestion
     
     sys.organization -= pow(1.1,4-((HEIGHT-sys.basin.hemY(sys.pos.y))/(HEIGHT*0.01)));
-    sys.organization -= (pow(map(sys.depth,0,1,1.17,1.31),shear*1.31)-1)*map(sys.depth,0,1,4.6,1.2);
-    sys.organization -= 1.41*map(moisture,0,0.68,3,0,true)*(shear*2);
+    sys.organization -= (pow(map(sys.depth,0,1,1.17,1.31),shear*1.31)-1)*map(sys.depth,0,1,4.5,1.2);
+    sys.organization -= 1.43*map(moisture,0,0.68,3,0,true)*(shear*2.1);
     sys.organization += sq(map(moisture,0.6,1,0,1,true))*4.4;
     if((nontropicalness > 0.175) && (nontropicalness < 0.56) && (moisture > 0.67) && (SST > 18.5)) sys.organization += moisture*1.2;
-    if((!lnd) || (moisture > (random(70,100) / 100))) sys.organization += moisture / 1.375;
+    if((!lnd) || (moisture > (random(70,100) / 100))) sys.organization += moisture / 1.3;
     if(random(0,(Math.round(60 - pow(shear*5,2)))) == 1) sys.organization -= random(1,12); // General convective issues and etc.
     if(((moisture < 0.48) && (sys.organization < 61)) && (Math.round(random(1,27)) == 2)) sys.organization -= random(1,4); // Convective degrade due to lower moisture
     if((moisture < 0.38) && (random(1,60) < 3)) sys.organization -= random(2,4); // Intenser degrade due to very lacking moisture
