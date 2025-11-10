@@ -53,25 +53,25 @@ SPAWN_RULES.defaults.archetypes = {
         x: ()=>random(0,WIDTH-1),
         y: (b)=>b.hemY(random(HEIGHT*0.65,HEIGHT*0.95)),
         broadening: false,
-        pressure: [1000, 1020],
-        windSpeed: [15, 35],
+        pressure: [1000,1010,1015,1020],
+        windSpeed: [15,25,35],
         type: TROPWAVE,
-        organization: [0,0.3],
-        lowerWarmCore: [0.9,1],
-        upperWarmCore: [0.8,1],
-        depth: [0,0.1]
+        organization: [0,0.1,0.3],
+        lowerWarmCore: [0.85,0.9,0.95,1],
+        upperWarmCore: [0.8,0.9,1],
+        depth: [0,0.05,0.1,0.2]
     },
     'ex': {
         x: ()=>random(0,WIDTH-1),
         y: (b,x)=> ifJetstreamBound(b,x),
         broadening: false,
-        pressure: [995, 1015],
+        pressure: [989,995,1005,1010,1015],
         windSpeed: [15, 35],
         type: EXTROP,
-        organization: [0,0.05],
-        lowerWarmCore: [0,0.15],
-        upperWarmCore: [0,0.05],
-        depth: [0.45,1]
+        organization: [0,0.05,0.1,0.12,0.3],
+        lowerWarmCore: [0,0.05,0.1,0.15,0.2],
+        upperWarmCore: [0,0.05,0.1],
+        depth: [0.45,0.475,0.5,0.6,0.7,0.8,0.9,0.9,1,1]
     },
     'l': {
         inherit: 'tw',
