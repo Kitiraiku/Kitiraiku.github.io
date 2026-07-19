@@ -292,9 +292,9 @@ ENV_DEFS.defaults.jetstream = {
     ],
     modifiers: {
         peakLat: 0.45,
-        antiPeakLat: 0.63,
+        antiPeakLat: 0.67,
         peakRange: 0.33,
-        antiPeakRange: 0.68
+        antiPeakRange: 0.32
     }
 };
 ENV_DEFS[SIM_MODE_NORMAL].jetstream = {};
@@ -548,7 +548,7 @@ ENV_DEFS.defaults.SSTAnomaly = {
     version: 0,
     mapFunc: (u,x,y,z)=>{
         let v = u.noise(0);
-        v = v*1.8;
+        v = v*1.82;
         let i = v<1 ? -1 : 1;
         v = 1-abs(1-v);
         if(v===0) v = 0.000001;
@@ -650,7 +650,7 @@ ENV_DEFS.defaults.SST = {
     oceanic: true,
     modifiers: {
         offSeasonPolarTemp: 4.5,
-        peakSeasonPolarTemp: 12.5,
+        peakSeasonPolarTemp: 14.5,
         offSeasonTropicsTemp: 25.1,
         peakSeasonTropicsTemp: 28.05
     }
@@ -805,13 +805,13 @@ STORM_ALGORITHM.defaults.core = function(sys,u){
     
     sys.organization -= pow(1.1,4-((HEIGHT-sys.basin.hemY(sys.pos.y))/(HEIGHT*0.01)));
     sys.organization -= (pow(map(sys.depth,0,1,1.17,1.31),shear*1.31)-1)*map(sys.depth,0,1,4.5,1.2);
-    sys.organization -= 1.43*map(moisture,0,0.68,3,0,true)*(shear*2.1);
-    sys.organization += sq(map(moisture,0.6,1,0,1,true))*4.4;
+    sys.organization -= 1.43*map(moisture,0,0.68,3,0,true)*(shear*2.2);
+    sys.organization += sq(map(moisture,0.6,1,0,1,true))*4.41;
     if((nontropicalness > 0.175) && (nontropicalness < 0.56) && (moisture > 0.67) && (SST > 18.5)) sys.organization += moisture*1.2;
     if((!lnd) || (moisture > (random(70,100) / 100))) sys.organization += moisture / 1.3;
     if(random(0,(Math.round(60 - pow(shear*5,2)))) == 1) sys.organization -= random(1,12); // General convective issues and etc.
     if(((moisture < 0.48) && (sys.organization < 61)) && (Math.round(random(1,27)) == 2)) sys.organization -= random(1,4); // Convective degrade due to lower moisture
-    if((moisture < 0.38) && (random(1,60) < 3)) sys.organization -= random(2,4); // Intenser degrade due to very lacking moisture
+    if((moisture < 0.38) && (random(1,60) < 3)) sys.organization -= sys.pressure > 990 ? random(2,4) : random(0,2); // Intenser degrade due to very lacking moisture
     if(sys.broadening && (sys.organization < 80)) sys.organization -= random(0,1) / 2; // Broad boy
     sys.organization -= (pow(1.82,shear*1.3))*(0.2-sys.organization/100);
     sys.organization -= pow(1.21,20-SST)*tropicalness*0.9;
@@ -824,9 +824,9 @@ STORM_ALGORITHM.defaults.core = function(sys,u){
     sys.pressure = lerp(sys.pressure,targetPressure,(sys.pressure>targetPressure?0.05:0.08)*tropicalness);
     sys.pressure -= random(-3,3.5)*nontropicalness;
     // Additional Factors:
-    if(moisture > 0.6) sys.pressure -= (random(0,3) / 6) * (nontropicalness + 1); // Non-SST related instabilty from mositure and extratropicalness
+    if(moisture > 0.6) sys.pressure -= (random(0,3) / 6) * (nontropicalness + 1); // Non-SST related instabilty from moisture and extratropicalness
     if((sys.pressure < random(960,990)) && (random(0,500 - 3*round(100*(1 - moisture))) == 0)) sys.broadening = true; // EWRC
-    if(sys.organization > 0.95) sys.pressure += (pow(1.4,1 + SST/9.5) - 1) / 2; // SST Impact Nerf
+    if(sys.organization > 0.95) sys.pressure += (pow(1.41,1 + SST/9.5) - 1) / 2; // SST Impact Nerf
     if(random(1,(Math.round(80 - pow(shear*4,2.1)))) == 1) sys.pressure += random(1,3) / 2; // Convective Mishaps, amplified by shear
     if((tropicalness > nontropicalness) && (sys.pressure < 1000) && (random(1,Math.round(600-pow(shear*1.3,2))) == 0)) sys.pressure += random(6,23); // Disastrous Mishap
     if(sys.organization < 0.3) sys.pressure += random(-2,2.6)*tropicalness*0.9;
@@ -842,7 +842,7 @@ STORM_ALGORITHM.defaults.core = function(sys,u){
     if(sys.broadening) sys.windSpeed -= random(0,2) / 2;
     
     if((random(0,50) == 50) && (moisture > 0.69) && ((SST > 25.9) && (sys.organization < 1))) sys.broadening = false;
-    if((random(0,95) == 50) && (moisture > 0.69)) sys.broadening = false;
+    if((random(0,105) == 50) && (moisture > 0.69)) sys.broadening = false;
     if((sys.pressure < random(940,970)) && (random(0,29) == 0)) sys.broadening = false;
     if(random(0,320) == 0) sys.broadening = false;
     
@@ -858,7 +858,7 @@ STORM_ALGORITHM.defaults.core = function(sys,u){
     sys.depth = lerp(sys.depth,targetDepth,0.05);
     if (!lnd && sys.organization < 0.08 && Math.round(random(1,75) == 4)) sys.kill = true;
     if (lnd && sys.organization < 0.1 && Math.round(random(1,35) == 4)) sys.kill = true;
-    if(sys.pressure > 1030)
+    if(sys.pressure > 1029)
         sys.kill = true;
 };
 
